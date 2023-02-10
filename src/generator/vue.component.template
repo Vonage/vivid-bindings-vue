@@ -1,0 +1,14 @@
+<script setup lang="ts">
+import { register<% component-name %> } from '@vonage/vivid'
+<% imports %>
+defineProps<{
+<% props %>
+}>();
+register<% component-name %>('<% tag-prefix %>');
+</script>
+
+<template>
+  <<% tag %>
+<% tag-props %>
+  ></<% tag %>>
+</template>

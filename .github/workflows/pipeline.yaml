@@ -1,0 +1,33 @@
+name: 'pipeline'
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+  # schedule:
+  #   # Runs "At 00:00 on Sunday" (see https://crontab.guru)
+  #   - cron: '0 0 * * 0'
+
+jobs:
+  generate:
+    name: Run bindings generation
+    runs-on: [self-hosted, linux]
+
+    steps:
+      - uses: actions/checkout@main
+      - name: Checkout wiki code
+        uses: actions/checkout@main
+        with:
+          repository: ${{github.repository}}.wiki
+          path: markdown/
+      - uses: denoland/setup-deno@main
+        with:
+          deno-version: vx.x.x
+      - name: Run
+        run: deno task generate
+      - name: Push to wiki
+        run: |
+          cd markdown
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git diff-index --quiet HEAD || git pull && git commit -m "Add changes" && git push

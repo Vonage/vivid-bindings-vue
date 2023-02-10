@@ -1,0 +1,2 @@
+const deCapitalize = (input: string) => input.replace(/(^|\s)[A-Z]/g, s => s.toLowerCase())
+export const camel2kebab = (input: string) => deCapitalize(input).replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, '-').toLowerCase()
