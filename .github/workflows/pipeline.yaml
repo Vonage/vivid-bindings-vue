@@ -3,9 +3,9 @@ name: 'pipeline'
 on:
   workflow_dispatch:
   repository_dispatch:
-  # schedule:
-  #   # Runs "At 00:00 on Sunday" (see https://crontab.guru)
-  #   - cron: '0 0 * * 0'
+  schedule:
+    # Runs "At 00:00 on Sunday" (see https://crontab.guru)
+    - cron: '0 0 * * 0'
 
 jobs:
   generate:
@@ -23,10 +23,10 @@ jobs:
         with:
           deno-version: vx.x.x
       - name: Check if Vivid has new version
-        id: vividVersion
+        id: vividHasNewVersion
         run: deno task newVivid >> $GITHUB_OUTPUT
       - name: Generate bindings
-        if: steps.vividVersion.outputs.result == 'true'
+        if: steps.vividHasNewVersion.outputs.result == 'true'
         run: deno task generate
       - name: Push to wiki
         run: |
