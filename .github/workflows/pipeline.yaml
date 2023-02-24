@@ -24,7 +24,7 @@ jobs:
           deno-version: vx.x.x
       - name: Check if Vivid has new version
         id: vividVersion
-        run: deno task newVivid
+        run: deno task newVivid >> $GITHUB_OUTPUT
       - name: Generate bindings
         if: steps.vividVersion.outputs.result
         run: deno task generate
