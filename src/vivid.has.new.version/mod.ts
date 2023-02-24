@@ -6,14 +6,13 @@ import { versionFile } from '../consts.ts'
  *   returns exit code `true` when Vivid has a newer version and there are No corresponding bindings package exists
  *   returns exit code `false` when Vivid latest version equal to the latest bindings package
  */
-const { readFileSync, env } = Deno
+const { readFileSync } = Deno
 
 const previousVersion = new TextDecoder('utf-8').decode(readFileSync(versionFile))
 const bindingsPkg = { version: previousVersion }
 
 const versionsAreEquals = bindingsPkg.version === vividPkg.version
 
-console.info(`Vivid latest version is ${vividPkg.version}\nVueJs bindings latest version is ${bindingsPkg.version}`)
-console.info(`Resolution: ${!versionsAreEquals ? 'Bindings generation is needed' : 'Idle'}`)
+// console.info(`Vivid latest version is ${vividPkg.version}\nVueJs bindings latest version is ${bindingsPkg.version}`)
+// console.info(`Resolution: ${!versionsAreEquals ? 'Bindings generation is needed' : 'Idle'}`)
 console.log(`result=${versionsAreEquals}`)
-env.set('GITHUB_OUTPUT', `result=${versionsAreEquals}`)
