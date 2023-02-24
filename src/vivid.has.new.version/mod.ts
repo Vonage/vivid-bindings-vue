@@ -6,7 +6,7 @@ import { versionFile } from '../consts.ts'
  *   returns exit code `1` when Vivid has a newer version and there are No corresponding bindings package exists
  *   returns exit code `0` when Vivid latest version equal to the latest bindings package
  */
-const { exit, readFileSync } = Deno
+const { readFileSync } = Deno
 
 enum ResultCode {
   generationIsNeeeded = 1,
@@ -21,5 +21,4 @@ const result = versionsAreEquals ? ResultCode.idle : ResultCode.generationIsNeee
 
 console.info(`Vivid latest version is ${vividPkg.version}\nVueJs bindings latest version is ${bindingsPkg.version}`)
 console.info(`Resolution: ${result === ResultCode.generationIsNeeeded ? 'Bindings generation is needed' : 'Idle'}`)
-
-exit(result)
+console.log(`result=${result}`)

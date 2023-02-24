@@ -23,8 +23,10 @@ jobs:
         with:
           deno-version: vx.x.x
       - name: Check if Vivid has new version
+        id: vividVersion
         run: deno task newVivid
       - name: Generate bindings
+        if: steps.vividVersion.outputs.result
         run: deno task generate
       - name: Push to wiki
         run: |
