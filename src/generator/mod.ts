@@ -93,6 +93,7 @@ export const generate = async () => {
       .map(([name, { declaration }]) => `export type ${name} = ${declaration}`).join('\n'))
   )
 
+  // write actual version as handled
   await ensureDir(markdownFolder)
-  // await Deno.writeFile(versionFile, new TextEncoder().encode(vpkg.version))
+  await Deno.writeFile(versionFile, new TextEncoder().encode(vpkg.version))
 }
