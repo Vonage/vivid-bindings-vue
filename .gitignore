@@ -1,2 +1,10 @@
 markdown
 deno.lock
+
+# generated stuff
+package/src/generated
+package/node_modules
+package/dist
+package/v3
+package/package.json
+package/package-lock.json

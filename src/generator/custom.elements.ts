@@ -37,7 +37,8 @@ export const enumerateVividElements = async (
     vueComponentName: string,
     tagName: string,
     properties: ClassField[],
-    imports: string[]
+    imports: string[],
+    classDeclaration: ClassDeclaration
   ) => Promise<void>) => {
   const classDeclarations = await getValidVividClassDeclarations()
 
@@ -48,8 +49,9 @@ export const enumerateVividElements = async (
     const tagName = `${tagPrefix}-${camel2kebab(elementName)}`
     let properties = (classDeclaration.members?.filter(
       (member) => member.kind === 'field' &&
-        member.privacy === 'public'
-        && (member as ReadOnlyClassField)?.readonly !== true) || []) as ClassField[]
+        (member.privacy ?? 'public') === 'public').filter(
+          (member) => member as ReadOnlyClassField ? (member as ReadOnlyClassField).readonly !== true : true
+        ) || []) as ClassField[]
 
     for (const classDecorator of classDecorators.map(
       (decoratorClass: new () => IAbstractClassDeclarationDecorator) => {
@@ -72,7 +74,8 @@ export const enumerateVividElements = async (
       componentName,
       tagName,
       properties,
-      imports
+      imports,
+      classDeclaration
     )
   }
 }

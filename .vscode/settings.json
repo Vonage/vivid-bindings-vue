@@ -1,5 +1,5 @@
 {
-    "deno.enable": true,
+    "deno.enablePaths": ["./src"],
     "deno.lint": true,
     "deno.unstable": true,
     "[typescript]": {
