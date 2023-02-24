@@ -7,7 +7,7 @@ import { register<% component-name %> } from '@vonage/vivid'
 defineProps<{
 <% props %>
 }>();
-register<% component-name %>('<% tag-prefix %>');
+register<% component-name %>('<% tag-prefix %>')
 </script>
 
 <template>
