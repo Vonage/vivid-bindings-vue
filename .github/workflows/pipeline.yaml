@@ -26,7 +26,7 @@ jobs:
         id: vividVersion
         run: deno task newVivid >> $GITHUB_OUTPUT
       - name: Generate bindings
-        if: steps.vividVersion.outputs.result
+        if: steps.vividVersion.outputs.result == 'true'
         run: deno task generate
       - name: Push to wiki
         run: |
