@@ -1,6 +1,6 @@
 {
     "tasks": {
         "generate": "deno run --allow-run --allow-read --allow-write --allow-env --allow-net src/mod.ts",
-        "if": "deno run --allow-run --allow-read --allow-write --allow-env --allow-net src/generation.needed/mod.ts"
+        "newVivid": "deno run --allow-run --allow-read --allow-write --allow-env --allow-net src/vivid.has.new.version/mod.ts"
     }
 }

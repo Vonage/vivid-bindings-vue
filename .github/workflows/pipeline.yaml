@@ -22,7 +22,9 @@ jobs:
       - uses: denoland/setup-deno@main
         with:
           deno-version: vx.x.x
-      - name: Run
+      - name: Check if Vivid has new version
+        run: deno task newVivid
+      - name: Generate bindings
         run: deno task generate
       - name: Push to wiki
         run: |

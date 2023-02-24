@@ -2,7 +2,7 @@ import { ensureDir } from 'https://deno.land/std@0.137.0/fs/ensure_dir.ts'
 
 // import api from 'https://esm.sh/@vonage/vivid@latest/vivid.api.json' assert { type: "json" }
 import vpkg from 'https://esm.sh/@vonage/vivid@latest/package.json' assert { type: "json" }
-import { markdownFolder, npmPackageName, tagPrefix, versionMarkdownFile } from '../consts.ts'
+import { markdownFolder, npmPackageName, tagPrefix, versionFile } from '../consts.ts'
 import { enumerateVividElements } from './custom.elements.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
 import { TypeDeclarationsMap } from './decorators/types.ts'
@@ -94,8 +94,5 @@ export const generate = async () => {
   )
 
   await ensureDir(markdownFolder)
-  await Deno.writeFile(
-    `${markdownFolder}/${versionMarkdownFile}`,
-    new TextEncoder().encode(vpkg.version)
-  )
+  // await Deno.writeFile(versionFile, new TextEncoder().encode(vpkg.version))
 }
