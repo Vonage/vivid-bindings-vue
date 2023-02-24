@@ -15,4 +15,4 @@ const versionsAreEquals = bindingsPkg.version === vividPkg.version
 
 // console.info(`Vivid latest version is ${vividPkg.version}\nVueJs bindings latest version is ${bindingsPkg.version}`)
 // console.info(`Resolution: ${!versionsAreEquals ? 'Bindings generation is needed' : 'Idle'}`)
-console.log(`result=${versionsAreEquals}`)
+console.log(`result=${!versionsAreEquals}`)
