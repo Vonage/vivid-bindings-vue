@@ -1,7 +1,7 @@
 import customElements from 'https://esm.sh/@vonage/vivid@latest/custom-elements.json' assert { type: "json" }
 import { Package, Declaration, ClassDeclaration, ClassField } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { tagPrefix } from '../consts.ts'
-import { IAbstractClassDeclarationDecorator, IClassPropertiesDecorator, IImportsProviderDecorator } from './decorators/types.ts'
+import { IAbstractClassDeclarationDecorator, IClassPropertiesDecorator, IImportsProviderDecorator, ITypeDeclarationsProviderDecorator, TypeDeclaration, TypeDeclarationsMap } from './decorators/types.ts'
 import { camel2kebab } from './utils.ts'
 
 type ReadOnlyClassField = ClassField & {
@@ -38,12 +38,14 @@ export const enumerateVividElements = async (
     tagName: string,
     properties: ClassField[],
     imports: string[],
+    typeDeclarations: TypeDeclarationsMap,
     classDeclaration: ClassDeclaration
   ) => Promise<void>) => {
   const classDeclarations = await getValidVividClassDeclarations()
 
   for await (const classDeclaration of classDeclarations) {
     const imports = []
+    const typeDeclarations: Record<string, TypeDeclaration> = {}
     const elementName = classDeclaration.name
     const componentName = getComponentName(classDeclaration)
     const tagName = `${tagPrefix}-${camel2kebab(elementName)}`
@@ -64,6 +66,12 @@ export const enumerateVividElements = async (
         imports.push(...(classDecorator as IImportsProviderDecorator).imports)
       }
 
+      if (classDecorator as ITypeDeclarationsProviderDecorator) {
+        (classDecorator as ITypeDeclarationsProviderDecorator).typeDeclarations.forEach(
+          x => typeDeclarations[x.name] = x
+        )
+      }
+
       if (classDecorator as IClassPropertiesDecorator) {
         properties = (classDecorator as IClassPropertiesDecorator).decorateProperties(properties)
       }
@@ -75,6 +83,7 @@ export const enumerateVividElements = async (
       tagName,
       properties,
       imports,
+      typeDeclarations,
       classDeclaration
     )
   }

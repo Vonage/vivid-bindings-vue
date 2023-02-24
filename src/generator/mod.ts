@@ -1,15 +1,11 @@
 import { ensureDir } from 'https://deno.land/std@0.137.0/fs/ensure_dir.ts'
 
-import * as icons from 'https://icon.resources.vonage.com/latest' assert { type: "json" }
 // import api from 'https://esm.sh/@vonage/vivid@latest/vivid.api.json' assert { type: "json" }
 import vpkg from 'https://esm.sh/@vonage/vivid@latest/package.json' assert { type: "json" }
 import { npmPackageName, tagPrefix } from '../consts.ts'
 import { enumerateVividElements } from './custom.elements.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
-
-interface IconDescriptor {
-  id: string
-}
+import { TypeDeclarationsMap } from './decorators/types.ts'
 
 const readTemplate = async (
   name = ''
@@ -54,10 +50,12 @@ export const generate = async () => {
   )
 
   console.log('Generating VueJs components...')
+  let elementsTypeDeclarations: TypeDeclarationsMap = {}
   await enumerateVividElements(
     [IconTypeDecorator],
-    async (elementName, componentName, tagName, properties, imports, classDeclaration) => {
+    async (elementName, componentName, tagName, properties, imports, typeDeclarations, classDeclaration) => {
       console.log(componentName)
+      elementsTypeDeclarations = { ...elementsTypeDeclarations, ...typeDeclarations }
       const componentPackageDir = `${v3Dir}/${componentName}`
       const content = await readTemplate('src/generator/vue.component.template')
       const resultContent = content?.
@@ -89,9 +87,9 @@ export const generate = async () => {
     }
   )
 
-  const typesContent = `export type IconId = ${((icons as Record<string, unknown>).default as IconDescriptor[]).map(({ id }) => `'${id}'`).join('\n | ')}`
   await Deno.writeFile(
     `${packageGeneratedSrcDir}/types.ts`,
-    new TextEncoder().encode(typesContent)
+    new TextEncoder().encode(Object.entries(elementsTypeDeclarations)
+      .map(([name, { declaration }]) => `export type ${name} = ${declaration}`).join('\n'))
   )
 }

@@ -1,11 +1,22 @@
 import { ClassDeclaration, ClassField } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 
+export type TypeDeclaration = {
+  name: string
+  declaration: string
+}
+
+export type TypeDeclarationsMap = Record<string, TypeDeclaration>
+
 export interface IAbstractClassDeclarationDecorator {
   init(classDeclaration: ClassDeclaration): void
 }
 
 export interface IImportsProviderDecorator extends IAbstractClassDeclarationDecorator {
   get imports(): string[]
+}
+
+export interface ITypeDeclarationsProviderDecorator extends IAbstractClassDeclarationDecorator {
+  get typeDeclarations(): TypeDeclaration[]
 }
 
 export interface IClassPropertiesDecorator extends IAbstractClassDeclarationDecorator {

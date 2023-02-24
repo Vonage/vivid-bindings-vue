@@ -1,10 +1,22 @@
+import * as icons from 'https://icon.resources.vonage.com/latest' assert { type: "json" }
 import { ClassField } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
-import { AbstractClassDeclarationDecorator, IClassPropertiesDecorator, IImportsProviderDecorator } from "./types.ts"
+import {
+  AbstractClassDeclarationDecorator,
+  IClassPropertiesDecorator,
+  IImportsProviderDecorator,
+  ITypeDeclarationsProviderDecorator,
+  TypeDeclaration
+} from "./types.ts"
+
+interface IconDescriptor {
+  id: string
+}
 
 /**
  * Replaces icon property as of type `string` by type `IconId`
  */
 export class IconTypeDecorator extends AbstractClassDeclarationDecorator implements
+  ITypeDeclarationsProviderDecorator,
   IImportsProviderDecorator,
   IClassPropertiesDecorator {
 
@@ -26,22 +38,20 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
     return this.isIconClass || this.isAvatarClass || this.isCardClass
   }
 
-  decorateProperties(properties: ClassField[]): ClassField[] {
-    return properties.map(
-      (prop: ClassField) => {
-        if (prop.type &&
-          (
-            (this.isIconClass && prop.name === 'name') ||
-            (this.isAvatarClass && prop.name === 'icon') ||
-            (this.isCardClass && prop.name === 'icon')
-          )
-        ) {
-          prop.type.text = IconTypeDecorator.typeName
-        }
-        return prop
+  decorateProperties = (properties: ClassField[]) => properties.map(
+    (prop: ClassField) => {
+      if (prop.type &&
+        (
+          (this.isIconClass && prop.name === 'name') ||
+          (this.isAvatarClass && prop.name === 'icon') ||
+          (this.isCardClass && prop.name === 'icon')
+        )
+      ) {
+        prop.type.text = IconTypeDecorator.typeName
       }
-    )
-  }
+      return prop
+    }
+  )
 
   get imports(): string[] {
     if (this.isTargetClass) {
@@ -50,5 +60,14 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
       ]
     }
     return []
+  }
+
+  get typeDeclarations(): TypeDeclaration[] {
+    return [
+      {
+        name: IconTypeDecorator.typeName,
+        declaration: `${((icons as Record<string, unknown>).default as IconDescriptor[]).map(({ id }) => `'${id}'`).join('\n | ')}`
+      }
+    ]
   }
 }
