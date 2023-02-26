@@ -10,13 +10,13 @@ export * from './generated/types'
 export * from './types'
 
 const appendLinkElement = (document: Document) => (rel: string, href: string, crossOrigin: boolean = false) => {
-  const styleElement = document.createElement('link')
-  styleElement.setAttribute('rel', rel)
-  styleElement.setAttribute('href', href)
+  const linkElement = document.createElement('link')
+  linkElement.setAttribute('rel', rel)
+  linkElement.setAttribute('href', href)
   if (crossOrigin) {
-    styleElement.setAttribute('crossorigin', '')
+    linkElement.setAttribute('crossorigin', '')
   }
-  document.head.append(styleElement)
+  document.head.append(linkElement)
 }
 
 const appendStyleElement = (document: Document) => (styleDescriptor: StyleDescriptor) => {
