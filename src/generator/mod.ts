@@ -33,6 +33,10 @@ export const generate = async () => {
       scripts: {
         "build": "vite build"
       },
+      dependencies: {
+        "@vonage/vivid": "latest",
+        "vue": "3.2.47"
+      },
       devDependencies: {
         "tslib": "2.4.1",
         "typescript": "4.9.4",
@@ -92,6 +96,19 @@ export const generate = async () => {
     new TextEncoder().encode(Object.entries(elementsTypeDeclarations)
       .map(([name, { declaration }]) => `export type ${name} = ${declaration}`).join('\n'))
   )
+
+  for await (const stylesFile of [
+    { name: 'core.all', url: 'https://unpkg.com/@vonage/vivid@latest/styles/core/all.css' },
+    { name: 'theme.light', url: 'https://unpkg.com/@vonage/vivid@latest/styles/tokens/theme-light.css' },
+    { name: 'theme.dark', url: 'https://unpkg.com/@vonage/vivid@latest/styles/tokens/theme-dark.css' }
+  ]) {
+    const response = await fetch(stylesFile.url)
+    const cssText = await response.text()
+    await Deno.writeFile(
+      `${packageGeneratedSrcDir}/style.${stylesFile.name}.ts`,
+      new TextEncoder().encode(`export default { id: '${stylesFile.name}', css: \`${cssText}\`}`)
+    )
+  }
 
   // write actual version as handled
   await ensureDir(markdownFolder)
