@@ -10,19 +10,20 @@ import {
 export class EventsDecorator extends AbstractClassDeclarationDecorator implements
   IEventsDecorator {
 
-  decorateEvents(events: Event[]): Event[] {
-    return [
-      ...events,
-      ...(this.isButtonClass ? [{
+  extraEventsMap: Record<string, Event[]> = {
+    Button: [
+      {
         name: 'click',
         type: {
           text: 'PointerEvent'
         }
-      }] : [])
+      }
     ]
   }
 
-  get isButtonClass() {
-    return this.classLike!.name === 'Button'
-  }
+  decorateEvents = (events: Event[]) =>
+    [
+      ...events,
+      ...(this.extraEventsMap[this.classLike!.name] ?? [])
+    ]
 }

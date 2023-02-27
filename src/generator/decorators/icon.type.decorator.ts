@@ -26,6 +26,10 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
     return this.classLike!.name === 'Icon'
   }
 
+  get isButtonClass() {
+    return this.classLike!.name === 'Button'
+  }
+
   get isDialogClass() {
     return this.classLike!.name === 'Dialog'
   }
@@ -39,7 +43,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
   }
 
   get isTargetClass() {
-    return this.isIconClass || this.isAvatarClass || this.isCardClass || this.isDialogClass
+    return this.isIconClass || this.isAvatarClass || this.isCardClass || this.isDialogClass || this.isButtonClass
   }
 
   decorateProperties = (properties: ClassField[]) => properties.map(
@@ -49,6 +53,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
           (this.isIconClass && prop.name === 'name') ||
           (this.isAvatarClass && prop.name === 'icon') ||
           (this.isDialogClass && prop.name === 'icon') ||
+          (this.isButtonClass && prop.name === 'icon') ||
           (this.isCardClass && prop.name === 'icon')
         )
       ) {

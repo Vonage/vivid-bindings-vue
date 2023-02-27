@@ -6,6 +6,7 @@ import { markdownFolder, npmPackageName, tagPrefix, versionFile } from '../const
 import { enumerateVividElements } from './custom.elements.ts'
 import { EventsDecorator } from './decorators/events.decorator.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
+import { PropertiesDecorator } from './decorators/properties.decorator.ts'
 import { TypeDeclarationsMap } from './decorators/types.ts'
 
 const readTemplate = async (
@@ -57,7 +58,7 @@ export const generate = async () => {
   console.log('Generating VueJs components...')
   let elementsTypeDeclarations: TypeDeclarationsMap = {}
   await enumerateVividElements(
-    [EventsDecorator, IconTypeDecorator],
+    [PropertiesDecorator, EventsDecorator, IconTypeDecorator],
     async (elementName, componentName, tagName, properties, events, imports, typeDeclarations, classDeclaration) => {
       console.log(componentName)
       elementsTypeDeclarations = { ...elementsTypeDeclarations, ...typeDeclarations }

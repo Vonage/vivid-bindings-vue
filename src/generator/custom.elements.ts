@@ -63,23 +63,23 @@ export const enumerateVividElements = async (
   ) => Promise<void>) => {
   const classDeclarations = await getValidVividClassDeclarations()
 
-  for await (const classDeclaration of classDeclarations) {
+  for await (const classLike of classDeclarations) {
     const imports = []
     const typeDeclarations: Record<string, TypeDeclaration> = {}
-    const elementName = classDeclaration.name
-    const componentName = getComponentName(classDeclaration)
+    const elementName = classLike.name
+    const componentName = getComponentName(classLike)
     const tagName = `${tagPrefix}-${camel2kebab(elementName)}`
-    let properties = (classDeclaration.members?.filter(
+    let properties = (classLike.members?.filter(
       (member) => member.kind === 'field' &&
         (member.privacy ?? 'public') === 'public').filter(
           (member) => member as ReadOnlyClassField ? (member as ReadOnlyClassField).readonly !== true : true
         ) || []) as ClassField[]
-    let events = (classDeclaration as CustomElement).events || []
+    let events = (classLike as CustomElement).events || []
 
     for (const decorator of classLikeDecorators.map(
       (decoratorClass: new () => IAbstractClassLikeDecorator) => {
         const instance = new decoratorClass()
-        instance.init(classDeclaration)
+        instance.init(classLike)
         return instance
       }
     )) {
@@ -110,7 +110,7 @@ export const enumerateVividElements = async (
       events,
       imports,
       typeDeclarations,
-      classDeclaration
+      classLike
     )
   }
 }
