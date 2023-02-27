@@ -21,29 +21,23 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
   IPropertiesDecorator {
 
   static typeName = 'IconId'
+  iconCapableClasses = ['Tab', 'Fab', 'Banner',
+    'Button', 'Dialog', 'Badge',
+    'Avatar', 'Card', 'AccordionItem',
+    'Option', 'Note', 'TextField',
+    'NavDisclosure',
+    'NavItem', 'MenuItem']
 
   get isIconClass() {
     return this.classLike!.name === 'Icon'
   }
 
-  get isButtonClass() {
-    return this.classLike!.name === 'Button'
-  }
-
-  get isDialogClass() {
-    return this.classLike!.name === 'Dialog'
-  }
-
-  get isAvatarClass() {
-    return this.classLike!.name === 'Avatar'
-  }
-
-  get isCardClass() {
-    return this.classLike!.name === 'Card'
+  get isIconCapableClass() {
+    return this.iconCapableClasses.includes(this.classLike!.name)
   }
 
   get isTargetClass() {
-    return this.isIconClass || this.isAvatarClass || this.isCardClass || this.isDialogClass || this.isButtonClass
+    return this.isIconClass || this.isIconCapableClass
   }
 
   decorateProperties = (properties: ClassField[]) => properties.map(
@@ -51,10 +45,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
       if (prop.type &&
         (
           (this.isIconClass && prop.name === 'name') ||
-          (this.isAvatarClass && prop.name === 'icon') ||
-          (this.isDialogClass && prop.name === 'icon') ||
-          (this.isButtonClass && prop.name === 'icon') ||
-          (this.isCardClass && prop.name === 'icon')
+          (this.isIconCapableClass && prop.name === 'icon')
         )
       ) {
         prop.type.text = IconTypeDecorator.typeName

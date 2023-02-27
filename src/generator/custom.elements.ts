@@ -22,8 +22,8 @@ type ReadOnlyClassField = ClassField & {
   readonly?: boolean
 }
 
-const getComponentName = (classDeclaration: ClassLike) => `Vwc${classDeclaration.name}`
-const getElementRegistrationFunctionName = (classDeclaration: ClassLike) => `register${classDeclaration.name}`
+const getComponentName = (classLike: ClassLike) => `Vwc${classLike.name}`
+const getElementRegistrationFunctionName = (classLike: ClassLike) => `register${classLike.name}`
 
 const getValidVividClassDeclarations = async () => {
   const vIndexJsResponse = await fetch('https://unpkg.com/@vonage/vivid@latest/index.js')

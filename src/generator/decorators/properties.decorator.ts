@@ -10,15 +10,44 @@ import {
 export class PropertiesDecorator extends AbstractClassDeclarationDecorator implements
   IPropertiesDecorator {
 
+  iconProperty = <ClassField>{
+    kind: "field",
+    name: "icon",
+    type: {
+      text: "string"
+    }
+  }
+
   extraPropertiesMap: Record<string, ClassField[]> = {
+    AccordionItem: [
+      this.iconProperty
+    ],
+    TextField: [
+      this.iconProperty
+    ],
     Button: [
-      {
-        kind: "field",
-        name: "icon",
-        type: {
-          text: "string"
-        }
-      },
+      this.iconProperty
+    ],
+    Badge: [
+      this.iconProperty
+    ],
+    Banner: [
+      this.iconProperty
+    ],
+    Fab: [
+      this.iconProperty
+    ],
+    NavItem: [
+      this.iconProperty
+    ],
+    MenuItem: [
+      this.iconProperty
+    ],
+    NavDisclosure: [
+      this.iconProperty
+    ],
+    Note: [
+      this.iconProperty
     ]
   }
 
