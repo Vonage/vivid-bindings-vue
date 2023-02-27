@@ -1,4 +1,4 @@
 # publish `@vonage/vivid-bindings-vue` package
-# handle vivid components events contracts
-# handle Vivid consts enums like ButtonConnotation, ButtonShape, IconConnotation, etc.
+# expose Vivid element methods throu the generated vue component
+# handle Vivid consts enums like ButtonConnotation, ButtonShape, IconConnotation, etc. file a PR against Vivid-3 repo to export Enums and component specific types as a part of elements public contract
 # documentation + readme

@@ -2,7 +2,7 @@ import * as icons from 'https://icon.resources.vonage.com/latest' assert { type:
 import { ClassField } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import {
   AbstractClassDeclarationDecorator,
-  IClassPropertiesDecorator,
+  IPropertiesDecorator,
   IImportsProviderDecorator,
   ITypeDeclarationsProviderDecorator,
   TypeDeclaration
@@ -18,24 +18,28 @@ interface IconDescriptor {
 export class IconTypeDecorator extends AbstractClassDeclarationDecorator implements
   ITypeDeclarationsProviderDecorator,
   IImportsProviderDecorator,
-  IClassPropertiesDecorator {
+  IPropertiesDecorator {
 
   static typeName = 'IconId'
 
   get isIconClass() {
-    return this.classDeclaration!.name === 'Icon'
+    return this.classLike!.name === 'Icon'
+  }
+
+  get isDialogClass() {
+    return this.classLike!.name === 'Dialog'
   }
 
   get isAvatarClass() {
-    return this.classDeclaration!.name === 'Avatar'
+    return this.classLike!.name === 'Avatar'
   }
 
   get isCardClass() {
-    return this.classDeclaration!.name === 'Card'
+    return this.classLike!.name === 'Card'
   }
 
   get isTargetClass() {
-    return this.isIconClass || this.isAvatarClass || this.isCardClass
+    return this.isIconClass || this.isAvatarClass || this.isCardClass || this.isDialogClass
   }
 
   decorateProperties = (properties: ClassField[]) => properties.map(
@@ -44,6 +48,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
         (
           (this.isIconClass && prop.name === 'name') ||
           (this.isAvatarClass && prop.name === 'icon') ||
+          (this.isDialogClass && prop.name === 'icon') ||
           (this.isCardClass && prop.name === 'icon')
         )
       ) {

@@ -1,4 +1,4 @@
-import { ClassDeclaration, ClassField } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { ClassLike, Event, ClassField } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 
 export type TypeDeclaration = {
   name: string
@@ -7,19 +7,19 @@ export type TypeDeclaration = {
 
 export type TypeDeclarationsMap = Record<string, TypeDeclaration>
 
-export interface IAbstractClassDeclarationDecorator {
-  init(classDeclaration: ClassDeclaration): void
+export interface IAbstractClassLikeDecorator {
+  init(classDeclaration: ClassLike): void
 }
 
-export interface IImportsProviderDecorator extends IAbstractClassDeclarationDecorator {
+export interface IImportsProviderDecorator extends IAbstractClassLikeDecorator {
   get imports(): string[]
 }
 
-export interface ITypeDeclarationsProviderDecorator extends IAbstractClassDeclarationDecorator {
+export interface ITypeDeclarationsProviderDecorator extends IAbstractClassLikeDecorator {
   get typeDeclarations(): TypeDeclaration[]
 }
 
-export interface IClassPropertiesDecorator extends IAbstractClassDeclarationDecorator {
+export interface IPropertiesDecorator extends IAbstractClassLikeDecorator {
   /**
    * Mutates the properties
    * @param properties initial properties, mutated by the previous decorator
@@ -27,10 +27,18 @@ export interface IClassPropertiesDecorator extends IAbstractClassDeclarationDeco
   decorateProperties(properties: ClassField[]): ClassField[]
 }
 
-export abstract class AbstractClassDeclarationDecorator implements IAbstractClassDeclarationDecorator {
-  protected classDeclaration?: ClassDeclaration
+export interface IEventsDecorator extends IAbstractClassLikeDecorator {
+  /**
+   * Mutates the events
+   * @param events initial events, mutated by the previous decorator
+   */
+  decorateEvents(events: Event[]): Event[]
+}
 
-  init(classDeclaration: ClassDeclaration): void {
-    this.classDeclaration = classDeclaration
+export abstract class AbstractClassDeclarationDecorator implements IAbstractClassLikeDecorator {
+  protected classLike?: ClassLike
+
+  init(classLike: ClassLike): void {
+    this.classLike = classLike
   }
 }

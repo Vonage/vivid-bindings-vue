@@ -4,6 +4,7 @@ import { ensureDir } from 'https://deno.land/std@0.137.0/fs/ensure_dir.ts'
 import vpkg from 'https://esm.sh/@vonage/vivid@latest/package.json' assert { type: "json" }
 import { markdownFolder, npmPackageName, tagPrefix, versionFile } from '../consts.ts'
 import { enumerateVividElements } from './custom.elements.ts'
+import { EventsDecorator } from './decorators/events.decorator.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
 import { TypeDeclarationsMap } from './decorators/types.ts'
 
@@ -56,8 +57,8 @@ export const generate = async () => {
   console.log('Generating VueJs components...')
   let elementsTypeDeclarations: TypeDeclarationsMap = {}
   await enumerateVividElements(
-    [IconTypeDecorator],
-    async (elementName, componentName, tagName, properties, imports, typeDeclarations, classDeclaration) => {
+    [EventsDecorator, IconTypeDecorator],
+    async (elementName, componentName, tagName, properties, events, imports, typeDeclarations, classDeclaration) => {
       console.log(componentName)
       elementsTypeDeclarations = { ...elementsTypeDeclarations, ...typeDeclarations }
       const componentPackageDir = `${v3Dir}/${componentName}`
@@ -68,10 +69,14 @@ export const generate = async () => {
         .replaceAll('<% imports %>', imports.join('\n'))
         .replaceAll('<% tag %>', tagName)
         .replaceAll('<% tag-prefix %>', tagPrefix)
+        .replaceAll('<% events %>', events.map(x => `  (event: '${x.name}', payload: ${x.type.text}): void`).join('\n'))
         .replaceAll('<% props %>', properties.map((x) =>
           `  ${x.name}?: ${x.type?.text};`).join('\n'))
-        .replaceAll('<% tag-props %>', properties.map((x) =>
-          `    :${x.name}="${x.name}"`).join('\n'))
+        .replaceAll('<% tag-props %>',
+          [
+            ...properties.map((x) => `    :${x.name}="${x.name}"`),
+            ...events.map((x) => `    @${x.name}="$emit('${x.name}', $event)"`)
+          ].join('\n'))
       await ensureDir(componentPackageDir)
       await Deno.writeFile(
         `${componentPackageDir}/package.json`,
