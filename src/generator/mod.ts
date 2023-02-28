@@ -27,7 +27,7 @@ export const generate = async () => {
     `${packageDir}/package.json`,
     new TextEncoder().encode(JSON.stringify({
       name: npmPackageName,
-      version: crypto.randomUUID(), // TODO: revert to vpkg.version when end local testing
+      version: vpkg.version,
       main: "./dist/index.cjs.js",
       browser: "./dist/index.umd.js",
       module: "./dist/index.es.js",
@@ -42,7 +42,7 @@ export const generate = async () => {
       devDependencies: {
         "tslib": "2.4.1",
         "typescript": "4.9.4",
-        "vite": "4.0.4",
+        "vite": "4.1.4",
         "vitest": "0.28.5",
         "vite-plugin-dts": "1.7.1"
       }

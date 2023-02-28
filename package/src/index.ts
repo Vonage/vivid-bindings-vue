@@ -18,7 +18,6 @@ const appendLinkElement = (document: Document) => (rel: string, href: string, cr
   }
   document.head.append(linkElement)
 }
-
 const appendStyleElement = (document: Document) => (styleDescriptor: StyleDescriptor) => {
   const styleElement = document.createElement('style')
   styleElement.setAttribute('type', 'text/css')
@@ -27,8 +26,49 @@ const appendStyleElement = (document: Document) => (styleDescriptor: StyleDescri
   document.head.append(styleElement)
 }
 
+/**
+ * Vite config helper, to tell Vite which custom elements are Vivid elements
+ * @param tag
+ * @returns true if the tag IS a Vivid element
+ * @example
+ vite.config.ts:
+
+ import { isCustomElement } from '@vonage/vivid-bindings-vue'
+
+ ```json
+  plugins: [
+    vue(
+      {
+        template: {
+          compilerOptions: {
+            isCustomElement
+          }
+        }
+      }
+    )
+  ],
+```
+ */
 export const isCustomElement = (tag: string) => tag.startsWith(`${tagPrefix}-`)
 
+/**
+ * Inits Vivid iontegration for VueJs3 App
+ * @param config Provide initial Vivid config, font, theme, app, etc.
+ * @example
+import { createApp } from 'vue';
+import App from './App.vue';
+import { initVivid } from '@vonage/vivid-bindings-vue'
+
+const app = createApp(App)
+
+app.mount('#app')
+
+initVivid({
+    app,
+    font: 'oss',
+    theme: 'dark'
+})
+ */
 export const initVivid = (config: VividAppConfiguration) => {
   console.log('initVivid', config)
   const theme = config.theme ?? 'light'
@@ -44,6 +84,5 @@ export const initVivid = (config: VividAppConfiguration) => {
     appendLinkElement(document)('preconnect', 'https://fonts.gstatic.com', true)
     appendLinkElement(document)('stylesheet', 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap')
   }
-
   container?.classList.add('vvd-root')
 }
