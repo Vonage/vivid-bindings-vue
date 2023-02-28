@@ -13,28 +13,55 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
   iconProperty = <ClassField>{
     kind: "field",
     name: "icon",
+    description: 'Indicates which icon to resolve.',
     type: {
       text: "string"
     }
   }
 
+  /**
+   * TODO: To address issue to https://custom-elements-manifest.open-wc.org/
+   * issue: CEM Analyzer is not catching inherited properties & attributes
+   */
+  affixIconWithTrailingProperties: ClassField[] = [
+    this.iconProperty,
+    {
+      kind: "field",
+      name: "iconTrailing",
+      description: 'Indicates the icon affix alignment.',
+      type: {
+        text: "boolean"
+      }
+    }
+  ]
+
   extraPropertiesMap: Record<string, ClassField[]> = {
     AccordionItem: [
-      this.iconProperty
+      ...this.affixIconWithTrailingProperties
     ],
+    Button: [
+      ...this.affixIconWithTrailingProperties
+    ],
+    Badge: [
+      ...this.affixIconWithTrailingProperties
+    ],
+    Fab: [
+      ...this.affixIconWithTrailingProperties
+    ],
+    Tab: [
+      ...this.affixIconWithTrailingProperties
+    ],
+    Option: [
+      ...this.affixIconWithTrailingProperties
+    ],
+    TextAnchor: [
+      ...this.affixIconWithTrailingProperties
+    ],
+
     TextField: [
       this.iconProperty
     ],
-    Button: [
-      this.iconProperty
-    ],
-    Badge: [
-      this.iconProperty
-    ],
     Banner: [
-      this.iconProperty
-    ],
-    Fab: [
       this.iconProperty
     ],
     NavItem: [
@@ -54,6 +81,6 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
   decorateProperties = (properties: ClassField[]) =>
     [
       ...properties,
-      ...(this.extraPropertiesMap[this.classLike!.name] ?? [])
+      ...(this.extraPropertiesMap[this.className] ?? [])
     ]
 }

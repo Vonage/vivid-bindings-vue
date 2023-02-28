@@ -3,7 +3,7 @@ import { ensureDir } from 'https://deno.land/std@0.137.0/fs/ensure_dir.ts'
 // import api from 'https://esm.sh/@vonage/vivid@latest/vivid.api.json' assert { type: "json" }
 import vpkg from 'https://esm.sh/@vonage/vivid@latest/package.json' assert { type: "json" }
 import { markdownFolder, npmPackageName, tagPrefix, versionFile } from '../consts.ts'
-import { enumerateVividElements } from './custom.elements.ts'
+import { enumerateVividElements, getElementRegistrationFunctionName } from './custom.elements.ts'
 import { EventsDecorator } from './decorators/events.decorator.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
 import { PropertiesDecorator } from './decorators/properties.decorator.ts'
@@ -59,20 +59,21 @@ export const generate = async () => {
   let elementsTypeDeclarations: TypeDeclarationsMap = {}
   await enumerateVividElements(
     [PropertiesDecorator, EventsDecorator, IconTypeDecorator],
-    async (elementName, componentName, tagName, properties, events, imports, typeDeclarations, classDeclaration) => {
+    async (componentName, tagName, properties, events, imports, typeDeclarations, classDeclaration) => {
       console.log(componentName)
       elementsTypeDeclarations = { ...elementsTypeDeclarations, ...typeDeclarations }
       const componentPackageDir = `${v3Dir}/${componentName}`
       const content = await readTemplate('src/generator/vue.component.template')
       const resultContent = content?.
-        replaceAll('<% component-name %>', elementName)
+        replaceAll('<% component-register-method %>', getElementRegistrationFunctionName(classDeclaration))
         .replaceAll('<% comment %>', JSON.stringify(classDeclaration, null, ' '))
+        .replaceAll('<% component-jsdoc %>', classDeclaration.description ? `<!-- ${classDeclaration.description} -->` : '')
         .replaceAll('<% imports %>', imports.join('\n'))
         .replaceAll('<% tag %>', tagName)
         .replaceAll('<% tag-prefix %>', tagPrefix)
-        .replaceAll('<% events %>', events.map(x => `  (event: '${x.name}', payload: ${x.type.text}): void`).join('\n'))
+        .replaceAll('<% events %>', events.map(x => `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}(event: '${x.name}', payload: ${x.type.text}): void`).join('\n'))
         .replaceAll('<% props %>', properties.map((x) =>
-          `  ${x.name}?: ${x.type?.text};`).join('\n'))
+          `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}${x.name}?: ${x.type?.text};`).join('\n'))
         .replaceAll('<% tag-props %>',
           [
             ...properties.map((x) => `    :${x.name}="${x.name}"`),

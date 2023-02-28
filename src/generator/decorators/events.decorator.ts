@@ -24,6 +24,6 @@ export class EventsDecorator extends AbstractClassDeclarationDecorator implement
   decorateEvents = (events: Event[]) =>
     [
       ...events,
-      ...(this.extraEventsMap[this.classLike!.name] ?? [])
+      ...(this.extraEventsMap[this.className] ?? [])
     ]
 }

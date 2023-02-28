@@ -1,4 +1,5 @@
 import { ClassLike, Event, ClassField } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { getClassName } from '../custom.elements.ts'
 
 export type TypeDeclaration = {
   name: string
@@ -37,6 +38,10 @@ export interface IEventsDecorator extends IAbstractClassLikeDecorator {
 
 export abstract class AbstractClassDeclarationDecorator implements IAbstractClassLikeDecorator {
   protected classLike?: ClassLike
+
+  get className(): string {
+    return getClassName(this.classLike!)
+  }
 
   init(classLike: ClassLike): void {
     this.classLike = classLike

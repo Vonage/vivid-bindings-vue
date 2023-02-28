@@ -7,8 +7,9 @@
   ></<% tag %>>
 </template>
 
+<% component-jsdoc %>
 <script setup lang="ts">
-import { register<% component-name %> } from '@vonage/vivid'
+import { <% component-register-method %> } from '@vonage/vivid'
 <% imports %>
 defineProps<{
 <% props %>
@@ -16,5 +17,5 @@ defineProps<{
 defineEmits<{
 <% events %>
 }>();
-register<% component-name %>('<% tag-prefix %>')
+<% component-register-method %>('<% tag-prefix %>')
 </script>

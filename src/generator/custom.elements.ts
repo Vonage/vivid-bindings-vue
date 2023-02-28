@@ -18,12 +18,17 @@ import {
 } from './decorators/types.ts'
 import { camel2kebab } from './utils.ts'
 
+export const ClassNameAlias: Record<string, string> = {
+  ListboxOption: 'Option'
+}
+
 type ReadOnlyClassField = ClassField & {
   readonly?: boolean
 }
 
-const getComponentName = (classLike: ClassLike) => `Vwc${classLike.name}`
-const getElementRegistrationFunctionName = (classLike: ClassLike) => `register${classLike.name}`
+export const getClassName = (classLike: ClassLike) => ClassNameAlias[classLike.name] ?? classLike.name
+const getComponentName = (classLike: ClassLike) => `Vwc${getClassName(classLike)}`
+export const getElementRegistrationFunctionName = (classLike: ClassLike) => `register${getClassName(classLike)}`
 
 const getValidVividClassDeclarations = async () => {
   const vIndexJsResponse = await fetch('https://unpkg.com/@vonage/vivid@latest/index.js')
@@ -52,7 +57,6 @@ const isEventsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is
 export const enumerateVividElements = async (
   classLikeDecorators: Array<new () => IAbstractClassLikeDecorator>,
   elementVisitor: (
-    elementName: string,
     vueComponentName: string,
     tagName: string,
     properties: ClassField[],
@@ -66,7 +70,7 @@ export const enumerateVividElements = async (
   for await (const classLike of classDeclarations) {
     const imports = []
     const typeDeclarations: Record<string, TypeDeclaration> = {}
-    const elementName = classLike.name
+    const elementName = getClassName(classLike)
     const componentName = getComponentName(classLike)
     const tagName = `${tagPrefix}-${camel2kebab(elementName)}`
     let properties = (classLike.members?.filter(
@@ -103,7 +107,6 @@ export const enumerateVividElements = async (
     }
 
     await elementVisitor(
-      elementName,
       componentName,
       tagName,
       properties,

@@ -22,18 +22,18 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
 
   static typeName = 'IconId'
   iconCapableClasses = ['Tab', 'Fab', 'Banner',
-    'Button', 'Dialog', 'Badge',
+    'Button', 'Dialog', 'Badge', 'TextAnchor',
     'Avatar', 'Card', 'AccordionItem',
     'Option', 'Note', 'TextField',
     'NavDisclosure',
     'NavItem', 'MenuItem']
 
   get isIconClass() {
-    return this.classLike!.name === 'Icon'
+    return this.className === 'Icon'
   }
 
   get isIconCapableClass() {
-    return this.iconCapableClasses.includes(this.classLike!.name)
+    return this.iconCapableClasses.includes(this.className)
   }
 
   get isTargetClass() {
