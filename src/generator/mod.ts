@@ -7,6 +7,7 @@ import { enumerateVividElements, getElementRegistrationFunctionName } from './cu
 import { EventsDecorator } from './decorators/events.decorator.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
 import { PropertiesDecorator } from './decorators/properties.decorator.ts'
+import { SlotsDecorator } from './decorators/slots.decorator.ts'
 import { TypeDeclarationsMap } from './decorators/types.ts'
 
 const readTemplate = async (
@@ -58,8 +59,8 @@ export const generate = async () => {
   console.log('Generating VueJs components...')
   let elementsTypeDeclarations: TypeDeclarationsMap = {}
   await enumerateVividElements(
-    [PropertiesDecorator, EventsDecorator, IconTypeDecorator],
-    async (componentName, tagName, properties, events, imports, typeDeclarations, classDeclaration) => {
+    [SlotsDecorator, PropertiesDecorator, EventsDecorator, IconTypeDecorator],
+    async (componentName, tagName, properties, events, slots, imports, typeDeclarations, classDeclaration) => {
       console.log(componentName)
       elementsTypeDeclarations = { ...elementsTypeDeclarations, ...typeDeclarations }
       const componentPackageDir = `${v3Dir}/${componentName}`
@@ -70,6 +71,7 @@ export const generate = async () => {
         .replaceAll('<% component-jsdoc %>', classDeclaration.description ? `<!-- ${classDeclaration.description} -->` : '')
         .replaceAll('<% imports %>', imports.join('\n'))
         .replaceAll('<% tag %>', tagName)
+        .replaceAll('<% slot %>', slots.length > 0 ? `<slot />` : '')
         .replaceAll('<% tag-prefix %>', tagPrefix)
         .replaceAll('<% events %>', events.map(x => `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}(event: '${x.name}', payload: ${x.type.text}): void`).join('\n'))
         .replaceAll('<% props %>', properties.map((x) =>

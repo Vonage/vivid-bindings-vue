@@ -4,7 +4,8 @@ import {
   CustomElement,
   Event,
   ClassLike,
-  ClassField
+  ClassField,
+Slot
 } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { tagPrefix } from '../consts.ts'
 import {
@@ -14,7 +15,8 @@ import {
   ITypeDeclarationsProviderDecorator,
   TypeDeclaration,
   TypeDeclarationsMap,
-  IEventsDecorator
+  IEventsDecorator,
+ISlotsDecorator
 } from './decorators/types.ts'
 import { camel2kebab } from './utils.ts'
 
@@ -53,6 +55,7 @@ const isImportsProviderDecorator = (decorator: IAbstractClassLikeDecorator): dec
 const isTypeDeclarationsProviderDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ITypeDeclarationsProviderDecorator => (decorator as ITypeDeclarationsProviderDecorator).typeDeclarations !== undefined;
 const isPropertiesDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IPropertiesDecorator => (decorator as IPropertiesDecorator).decorateProperties !== undefined;
 const isEventsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IEventsDecorator => (decorator as IEventsDecorator).decorateEvents !== undefined;
+const isSlotsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ISlotsDecorator => (decorator as ISlotsDecorator).decorateSlots !== undefined;
 
 export const enumerateVividElements = async (
   classLikeDecorators: Array<new () => IAbstractClassLikeDecorator>,
@@ -61,6 +64,7 @@ export const enumerateVividElements = async (
     tagName: string,
     properties: ClassField[],
     events: Event[],
+    slots: Slot[],
     imports: string[],
     typeDeclarations: TypeDeclarationsMap,
     classDeclaration: ClassLike
@@ -79,6 +83,7 @@ export const enumerateVividElements = async (
           (member) => member as ReadOnlyClassField ? (member as ReadOnlyClassField).readonly !== true : true
         ) || []) as ClassField[]
     let events = (classLike as CustomElement).events || []
+    let slots = (classLike as CustomElement).slots || []
 
     for (const decorator of classLikeDecorators.map(
       (decoratorClass: new () => IAbstractClassLikeDecorator) => {
@@ -104,6 +109,10 @@ export const enumerateVividElements = async (
       if (isEventsDecorator(decorator)) {
         events = decorator.decorateEvents(events)
       }
+
+      if (isSlotsDecorator(decorator)) {
+        slots = decorator.decorateSlots(slots)
+      }
     }
 
     await elementVisitor(
@@ -111,6 +120,7 @@ export const enumerateVividElements = async (
       tagName,
       properties,
       events,
+      slots,
       imports,
       typeDeclarations,
       classLike

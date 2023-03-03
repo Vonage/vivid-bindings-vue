@@ -4,7 +4,7 @@
 <template>
   <<% tag %>
 <% tag-props %>
-  ><slot /></<% tag %>>
+  ><% slot %></<% tag %>>
 </template>
 
 <% component-jsdoc %>
