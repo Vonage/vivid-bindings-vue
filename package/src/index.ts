@@ -52,7 +52,7 @@ const appendStyleElement = (document: Document) => (styleDescriptor: StyleDescri
 export const isCustomElement = (tag: string) => tag.startsWith(`${tagPrefix}-`)
 
 /**
- * Inits Vivid iontegration for VueJs3 App
+ * Inits Vivid integration for VueJs3 App
  * @param config Provide initial Vivid config, font, theme, app, etc.
  * @example
 import { createApp } from 'vue';

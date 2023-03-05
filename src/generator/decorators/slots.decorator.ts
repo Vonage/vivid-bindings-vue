@@ -30,6 +30,9 @@ ISlotsDecorator {
     Banner: [
       { name: 'action-items', description: 'Nodes assigned to action-items slot will be set at the end of the container.' }
     ],
+    Calendar: [
+      { name: 'day', description: 'Day slot is created for each day of the week. Assign elements to a day column using \'day-0\' | \'day-1\' | \'day-2\' | \'day-3\' | \'day-4\' | \'day-5\' | \'day-6\'' },
+    ],
     Card: [
       { name: 'graphic', description: 'The graphic slot overide the icon property' },
       { name: 'media', description: 'The media slot is mainly for images or video content above the card header' },
@@ -38,6 +41,9 @@ ISlotsDecorator {
       { name: 'main', description: 'Card is battery charged with opinionated template. Assign nodes to main slot to fully override a card\'s predefined flow and style with your own.' },
     ],
     Combobox: [
+      this.contentSlot
+    ],
+    DataGrid: [
       this.contentSlot
     ],
     Dialog: [

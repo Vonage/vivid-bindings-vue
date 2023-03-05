@@ -10,6 +10,15 @@ import {
 export class PropertiesDecorator extends AbstractClassDeclarationDecorator implements
   IPropertiesDecorator {
 
+  slotProperty = <ClassField>{
+    kind: "field",
+    name: "slot",
+    description: 'Indicates the named slot to be injected to',
+    type: {
+      text: "string"
+    }
+  }
+
   iconProperty = <ClassField>{
     kind: "field",
     name: "icon",
@@ -80,6 +89,7 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
 
   decorateProperties = (properties: ClassField[]) =>
     [
+      this.slotProperty,
       ...properties,
       ...(this.extraPropertiesMap[this.className] ?? [])
     ]
