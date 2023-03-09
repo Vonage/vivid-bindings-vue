@@ -11,7 +11,7 @@ export class SlotsDecorator extends AbstractClassDeclarationDecorator implements
 ISlotsDecorator {
 
   contentSlot = {
-    name: 'content'
+    name: ''
   }
 
   extraSlotsMap: Record<string, Slot[]> = {

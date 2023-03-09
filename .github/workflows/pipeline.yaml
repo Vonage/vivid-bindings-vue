@@ -22,12 +22,25 @@ jobs:
       - uses: denoland/setup-deno@main
         with:
           deno-version: vx.x.x
+      - uses: actions/setup-node@main
+        with:
+          node-version: 18
       - name: Check if Vivid has new version
         id: vividHasNewVersion
         run: deno task newVivid >> $GITHUB_OUTPUT
       - name: Generate bindings
         if: steps.vividHasNewVersion.outputs.result == 'true'
-        run: deno task generate
+        run: |
+          deno task generate
+          cd ./package
+          npm install
+          npm run build
+          cp -f ./README.md ./package/README.md
+          echo registry=https://registry.npmjs.org/ > .npmrc
+          echo //registry.npmjs.org/:_authToken=${TOKEN} >> .npmrc
+          npm publish --dry-run --access public
+        env:
+          TOKEN: ${{ secrets.NPM_TOKEN }} # token has been issued on January 4, 2023. It's valid for 1 year
       - name: Push to wiki
         run: |
           cd markdown
