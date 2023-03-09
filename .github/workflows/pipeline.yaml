@@ -38,7 +38,7 @@ jobs:
           npm run build
           echo registry=https://registry.npmjs.org/ > .npmrc
           echo //registry.npmjs.org/:_authToken=${TOKEN} >> .npmrc
-          npm publish --dry-run --access public
+          npm publish --access public
         env:
           TOKEN: ${{ secrets.NPM_TOKEN }} # token has been issued on January 4, 2023. It's valid for 1 year
       - name: Push to wiki

@@ -1,6 +1,6 @@
 # vivid-bindings-vue
 
-Typescript bindings for [Vivid 3](http://vivid.deno.dev) web components to be used in [VueJS 3](https://vuejs.org)
+Typescript bindings for [Vivid 3](http://vivid.deno.dev) web components to be used with [VueJS 3](https://vuejs.org)
 
 What's in the box(i.e. batteries included):
 
