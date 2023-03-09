@@ -33,6 +33,11 @@ export const generate = async () => {
       browser: "./dist/index.umd.js",
       module: "./dist/index.es.js",
       types: "./dist/index.d.ts",
+      repository: {
+        "type": "git",
+        "url": "https://github.com/Vonage/vivid-bindings-vue"
+      },
+      license: "Apache-2.0",
       scripts: {
         "build": "vite build"
       },
