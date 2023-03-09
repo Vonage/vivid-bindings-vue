@@ -32,10 +32,10 @@ jobs:
         if: steps.vividHasNewVersion.outputs.result == 'true'
         run: |
           deno task generate
+          cp -f ./README.md ./package/README.md
           cd ./package
           npm install
           npm run build
-          cp -f ./README.md ./package/README.md
           echo registry=https://registry.npmjs.org/ > .npmrc
           echo //registry.npmjs.org/:_authToken=${TOKEN} >> .npmrc
           npm publish --dry-run --access public
