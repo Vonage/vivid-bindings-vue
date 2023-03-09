@@ -35,7 +35,7 @@ jobs:
           deno task generate
           cp -f ./README.md ./package/README.md
           cd ./package
-          npm install
+          npm ci
           npm run build
           echo registry=https://registry.npmjs.org/ > .npmrc
           echo //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN} >> .npmrc
