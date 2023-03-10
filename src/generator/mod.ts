@@ -4,6 +4,7 @@ import { ensureDir } from 'https://deno.land/std@0.137.0/fs/ensure_dir.ts'
 import vpkg from 'https://esm.sh/@vonage/vivid@latest/package.json' assert { type: "json" }
 import { markdownFolder, npmPackageName, tagPrefix, versionFile } from '../consts.ts'
 import { enumerateVividElements, getElementRegistrationFunctionName } from './custom.elements.ts'
+import { CssPropertiesDecorator } from './decorators/css.properties.decorator.ts'
 import { EventsDecorator } from './decorators/events.decorator.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
 import { PropertiesDecorator } from './decorators/properties.decorator.ts'
@@ -64,8 +65,17 @@ export const generate = async () => {
   console.log('Generating VueJs components...')
   let elementsTypeDeclarations: TypeDeclarationsMap = {}
   await enumerateVividElements(
-    [SlotsDecorator, PropertiesDecorator, EventsDecorator, IconTypeDecorator],
-    async (componentName, tagName, properties, events, slots, imports, typeDeclarations, classDeclaration) => {
+    [
+      CssPropertiesDecorator,
+      SlotsDecorator,
+      PropertiesDecorator,
+      EventsDecorator,
+      IconTypeDecorator
+    ],
+    async (componentName, tagName,
+      properties, cssProperties, cssParts,
+      events, slots, imports, typeDeclarations,
+      classDeclaration) => {
       console.log(componentName)
       elementsTypeDeclarations = { ...elementsTypeDeclarations, ...typeDeclarations }
       const componentPackageDir = `${v3Dir}/${componentName}`

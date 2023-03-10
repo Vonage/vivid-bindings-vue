@@ -5,18 +5,22 @@ import {
   Event,
   ClassLike,
   ClassField,
-Slot
+  Slot,
+  CssCustomProperty,
+  CssPart
 } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { tagPrefix } from '../consts.ts'
 import {
   IAbstractClassLikeDecorator,
   IPropertiesDecorator,
+  ICssPropertiesDecorator,
   IImportsProviderDecorator,
   ITypeDeclarationsProviderDecorator,
   TypeDeclaration,
   TypeDeclarationsMap,
   IEventsDecorator,
-ISlotsDecorator
+  ISlotsDecorator,
+  ICssPartsDecorator
 } from './decorators/types.ts'
 import { camel2kebab } from './utils.ts'
 
@@ -54,6 +58,8 @@ const getValidVividClassDeclarations = async () => {
 const isImportsProviderDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IImportsProviderDecorator => (decorator as IImportsProviderDecorator).imports !== undefined;
 const isTypeDeclarationsProviderDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ITypeDeclarationsProviderDecorator => (decorator as ITypeDeclarationsProviderDecorator).typeDeclarations !== undefined;
 const isPropertiesDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IPropertiesDecorator => (decorator as IPropertiesDecorator).decorateProperties !== undefined;
+const isCssPropertiesDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ICssPropertiesDecorator => (decorator as ICssPropertiesDecorator).decorateCSSProperties !== undefined;
+const isCssPartsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ICssPartsDecorator => (decorator as ICssPartsDecorator).decorateCSSParts !== undefined;
 const isEventsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IEventsDecorator => (decorator as IEventsDecorator).decorateEvents !== undefined;
 const isSlotsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ISlotsDecorator => (decorator as ISlotsDecorator).decorateSlots !== undefined;
 
@@ -63,6 +69,8 @@ export const enumerateVividElements = async (
     vueComponentName: string,
     tagName: string,
     properties: ClassField[],
+    cssProperties: CssCustomProperty[],
+    cssParts: CssPart[],
     events: Event[],
     slots: Slot[],
     imports: string[],
@@ -84,6 +92,8 @@ export const enumerateVividElements = async (
         ) || []) as ClassField[]
     let events = (classLike as CustomElement).events || []
     let slots = (classLike as CustomElement).slots || []
+    let cssProperties = (classLike as CustomElement).cssProperties || []
+    let cssParts = (classLike as CustomElement).cssParts || []
 
     for (const decorator of classLikeDecorators.map(
       (decoratorClass: new () => IAbstractClassLikeDecorator) => {
@@ -106,6 +116,14 @@ export const enumerateVividElements = async (
         properties = decorator.decorateProperties(properties)
       }
 
+      if (isCssPropertiesDecorator(decorator)) {
+        cssProperties = decorator.decorateCSSProperties(cssProperties)
+      }
+
+      if (isCssPartsDecorator(decorator)) {
+        cssParts = decorator.decorateCSSParts(cssParts)
+      }
+
       if (isEventsDecorator(decorator)) {
         events = decorator.decorateEvents(events)
       }
@@ -119,6 +137,8 @@ export const enumerateVividElements = async (
       componentName,
       tagName,
       properties,
+      cssProperties,
+      cssParts,
       events,
       slots,
       imports,

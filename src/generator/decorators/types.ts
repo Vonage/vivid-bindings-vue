@@ -1,4 +1,4 @@
-import { ClassLike, Event, ClassField, Slot } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { ClassLike, Event, ClassField, Slot, CssCustomProperty, CssPart } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { getClassName } from '../custom.elements.ts'
 
 export type TypeDeclaration = {
@@ -26,6 +26,22 @@ export interface IPropertiesDecorator extends IAbstractClassLikeDecorator {
    * @param properties initial properties, mutated by the previous decorator
    */
   decorateProperties(properties: ClassField[]): ClassField[]
+}
+
+export interface ICssPropertiesDecorator extends IAbstractClassLikeDecorator {
+  /**
+   * Mutates the css properties
+   * @param properties initial properties, mutated by the previous decorator
+   */
+  decorateCSSProperties(properties: CssCustomProperty[]): CssCustomProperty[]
+}
+
+export interface ICssPartsDecorator extends IAbstractClassLikeDecorator {
+  /**
+   * Mutates the css parts
+   * @param parts initial parts, mutated by the previous decorator
+   */
+  decorateCSSParts(parts: CssPart[]): CssPart[]
 }
 
 export interface IEventsDecorator extends IAbstractClassLikeDecorator {
