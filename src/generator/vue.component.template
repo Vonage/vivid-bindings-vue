@@ -9,7 +9,6 @@
 
 <% component-jsdoc %>
 <script setup lang="ts">
-import { <% component-register-method %> } from '@vonage/vivid'
 <% imports %>
 defineProps<{
 <% props %>

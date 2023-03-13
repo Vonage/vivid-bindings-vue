@@ -6,7 +6,7 @@ import {
 } from "./types.ts"
 
 /**
- * Adds missing CSS properties declarations, due to incomplete Vivid elements meta data
+ * Adds missing CSS properties/parts declarations, due to incomplete Vivid elements meta data
  */
 export class CssPropertiesDecorator extends AbstractClassDeclarationDecorator implements
   ICssPropertiesDecorator,

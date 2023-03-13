@@ -7,7 +7,9 @@ import { enumerateVividElements, getElementRegistrationFunctionName } from './cu
 import { CssPropertiesDecorator } from './decorators/css.properties.decorator.ts'
 import { EventsDecorator } from './decorators/events.decorator.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
+import { ImportsDecorator } from './decorators/imports.decorator.ts'
 import { PropertiesDecorator } from './decorators/properties.decorator.ts'
+import { PublicPropertiesDecorator } from './decorators/public.properties.decorator.ts'
 import { SlotsDecorator } from './decorators/slots.decorator.ts'
 import { TypeDeclarationsMap } from './decorators/types.ts'
 
@@ -66,11 +68,13 @@ export const generate = async () => {
   let elementsTypeDeclarations: TypeDeclarationsMap = {}
   await enumerateVividElements(
     [
+      PublicPropertiesDecorator,
       CssPropertiesDecorator,
       SlotsDecorator,
       PropertiesDecorator,
       EventsDecorator,
-      IconTypeDecorator
+      IconTypeDecorator,
+      ImportsDecorator
     ],
     async (componentName, tagName,
       properties, cssProperties, cssParts,

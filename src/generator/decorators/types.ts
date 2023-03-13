@@ -9,7 +9,11 @@ export type TypeDeclaration = {
 export type TypeDeclarationsMap = Record<string, TypeDeclaration>
 
 export interface IAbstractClassLikeDecorator {
-  init(classDeclaration: ClassLike): void
+  get className(): string
+}
+
+export interface IAbstractClassLikeDecoratorConstructor {
+  new(classLike: ClassLike, vividIndexJs: string): IAbstractClassLikeDecorator
 }
 
 export interface IImportsProviderDecorator extends IAbstractClassLikeDecorator {
@@ -60,14 +64,24 @@ export interface ISlotsDecorator extends IAbstractClassLikeDecorator {
   decorateSlots(events: Slot[]): Slot[]
 }
 
+export const isImportsProviderDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IImportsProviderDecorator => (decorator as IImportsProviderDecorator).imports !== undefined;
+export const isTypeDeclarationsProviderDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ITypeDeclarationsProviderDecorator => (decorator as ITypeDeclarationsProviderDecorator).typeDeclarations !== undefined;
+export const isPropertiesDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IPropertiesDecorator => (decorator as IPropertiesDecorator).decorateProperties !== undefined;
+export const isCssPropertiesDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ICssPropertiesDecorator => (decorator as ICssPropertiesDecorator).decorateCSSProperties !== undefined;
+export const isCssPartsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ICssPartsDecorator => (decorator as ICssPartsDecorator).decorateCSSParts !== undefined;
+export const isEventsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IEventsDecorator => (decorator as IEventsDecorator).decorateEvents !== undefined;
+export const isSlotsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ISlotsDecorator => (decorator as ISlotsDecorator).decorateSlots !== undefined;
+
 export abstract class AbstractClassDeclarationDecorator implements IAbstractClassLikeDecorator {
-  protected classLike?: ClassLike
+  protected classLike: ClassLike
+  protected vividIndexJs: string;
+
+  constructor (classLike: ClassLike, vividIndexJs: string) {
+    this.classLike = classLike
+    this.vividIndexJs = vividIndexJs
+  }
 
   get className(): string {
     return getClassName(this.classLike!)
-  }
-
-  init(classLike: ClassLike): void {
-    this.classLike = classLike
   }
 }

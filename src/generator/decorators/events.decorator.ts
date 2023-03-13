@@ -117,7 +117,6 @@ export class EventsDecorator extends AbstractClassDeclarationDecorator implement
         }
       }
     ],
-
   }
 
   decorateEvents = (events: Event[]) =>
