@@ -7,7 +7,8 @@ import {
   ClassField,
   Slot,
   CssCustomProperty,
-  CssPart
+  CssPart,
+  ClassMethod
 } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { tagPrefix } from '../consts.ts'
 import {
@@ -20,7 +21,8 @@ import {
   isCssPartsDecorator,
   isEventsDecorator,
   isSlotsDecorator,
-  isImportsProviderDecorator
+  isImportsProviderDecorator,
+  isMethodsDecorator
 } from './decorators/types.ts'
 import { camel2kebab } from './utils.ts'
 
@@ -60,6 +62,7 @@ export const enumerateVividElements = async (
     vueComponentName: string,
     tagName: string,
     properties: ClassField[],
+    methods: ClassMethod[],
     cssProperties: CssCustomProperty[],
     cssParts: CssPart[],
     events: Event[],
@@ -77,6 +80,7 @@ export const enumerateVividElements = async (
     const componentName = getComponentName(classLike)
     const tagName = `${tagPrefix}-${camel2kebab(elementName)}`
     let properties = classLike.members as ClassField[] || []
+    let methods = classLike.members as ClassMethod[] || []
     let events = (classLike as CustomElement).events || []
     let slots = (classLike as CustomElement).slots || []
     let cssProperties = (classLike as CustomElement).cssProperties || []
@@ -87,6 +91,10 @@ export const enumerateVividElements = async (
     )) {
       if (isPropertiesDecorator(decorator)) {
         properties = decorator.decorateProperties(properties)
+      }
+
+      if (isMethodsDecorator(decorator)) {
+        methods = decorator.decorateMethods(methods)
       }
 
       if (isTypeDeclarationsProviderDecorator(decorator)) {
@@ -120,6 +128,7 @@ export const enumerateVividElements = async (
       componentName,
       tagName,
       properties,
+      methods,
       cssProperties,
       cssParts,
       events,

@@ -9,16 +9,11 @@ import { EventsDecorator } from './decorators/events.decorator.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
 import { ImportsDecorator } from './decorators/imports.decorator.ts'
 import { PropertiesDecorator } from './decorators/properties.decorator.ts'
+import { PublicMethodsDecorator } from './decorators/public.methods.decorator.ts'
 import { PublicPropertiesDecorator } from './decorators/public.properties.decorator.ts'
 import { SlotsDecorator } from './decorators/slots.decorator.ts'
-import { TypeDeclarationsMap } from './decorators/types.ts'
-
-const readTemplate = async (
-  name = ''
-): Promise<string | undefined> => {
-  const decoder = new TextDecoder('utf-8')
-  return decoder.decode(await Deno.readFile(name))
-}
+import { TypeDeclarationsMap, AsyncClassMethod } from './decorators/types.ts'
+import { fillPlaceholders, readTemplate } from './utils.ts'
 
 export const generate = async () => {
   const packageDir = 'package'
@@ -69,6 +64,7 @@ export const generate = async () => {
   await enumerateVividElements(
     [
       PublicPropertiesDecorator,
+      PublicMethodsDecorator,
       CssPropertiesDecorator,
       SlotsDecorator,
       PropertiesDecorator,
@@ -77,29 +73,31 @@ export const generate = async () => {
       ImportsDecorator
     ],
     async (componentName, tagName,
-      properties, cssProperties, cssParts,
+      properties, methods, cssProperties, cssParts,
       events, slots, imports, typeDeclarations,
       classDeclaration) => {
       console.log(componentName)
       elementsTypeDeclarations = { ...elementsTypeDeclarations, ...typeDeclarations }
       const componentPackageDir = `${v3Dir}/${componentName}`
       const content = await readTemplate('src/generator/vue.component.template')
-      const resultContent = content?.
-        replaceAll('<% component-register-method %>', getElementRegistrationFunctionName(classDeclaration))
-        .replaceAll('<% comment %>', JSON.stringify(classDeclaration, null, ' '))
-        .replaceAll('<% component-jsdoc %>', classDeclaration.description ? `<!-- ${classDeclaration.description} -->` : '')
-        .replaceAll('<% imports %>', imports.join('\n'))
-        .replaceAll('<% tag %>', tagName)
-        .replaceAll('<% slot %>', slots.length > 0 ? `<slot />` : '')
-        .replaceAll('<% tag-prefix %>', tagPrefix)
-        .replaceAll('<% events %>', events.map(x => `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}(event: '${x.name}', payload: ${x.type.text}): void`).join('\n'))
-        .replaceAll('<% props %>', properties.map((x) =>
-          `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}${x.name}?: ${x.type?.text};`).join('\n'))
-        .replaceAll('<% tag-props %>',
-          [
-            ...properties.map((x) => `    :${x.name}="${x.name}"`),
-            ...events.map((x) => `    @${x.name}="$emit('${x.name}', $event)"`)
-          ].join('\n'))
+      const resultContent = fillPlaceholders(content)({
+        componentRegisterMethod: getElementRegistrationFunctionName(classDeclaration),
+        jsonModel: JSON.stringify(classDeclaration, null, ' '),
+        componentJsdoc: classDeclaration.description ? `<!-- ${classDeclaration.description} -->` : '',
+        imports: imports.join('\n'),
+        tagName,
+        slot: slots.length > 0 ? `<slot />` : '',
+        tagPrefix,
+        methods: methods.length > 0 ? `\nconst element = ref<HTMLElement | null>(null)\ndefineExpose({\n${methods.map((method) => `  ${method.name}: ${(method as AsyncClassMethod).async ? 'async ' : ''}() => (element.value as any)?.${method.name}()`).join(',\n')}\n});` : '',
+        events: events.length > 0 ? `\ndefineEmits<{\n${events.map(x => `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}(event: '${x.name}', payload: ${x.type.text}): void`).join('\n')}\n}>();` : '',
+        props: properties.length > 0 ? `defineProps<{\n${properties.map((x) =>
+          `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}${x.name}?: ${x.type?.text};`).join('\n')}\n}>();` : '',
+        tagProps: [
+          ...(methods.length > 0 ? ['    ref="element"'] : []),
+          ...properties.map((x) => `    :${x.name}="${x.name}"`),
+          ...events.map((x) => `    @${x.name}="$emit('${x.name}', $event)"`)
+        ].join('\n')
+      })
       await ensureDir(componentPackageDir)
       await Deno.writeFile(
         `${componentPackageDir}/package.json`,
