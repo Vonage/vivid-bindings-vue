@@ -88,7 +88,7 @@ export const generate = async () => {
         tagName,
         slot: slots.length > 0 ? `<slot />` : '',
         tagPrefix,
-        methods: methods.length > 0 ? `\nconst element = ref<HTMLElement | null>(null)\ndefineExpose({\n${methods.map((method) => `  ${method.name}: ${(method as AsyncClassMethod).async ? 'async ' : ''}() => (element.value as any)?.${method.name}()`).join(',\n')}\n});` : '',
+        methods: methods.length > 0 ? `\nconst element = ref<HTMLElement | null>(null)\ndefineExpose({\n${methods.map((method) => `  ${method.name}: ${(method as AsyncClassMethod).async ? 'async ' : ''}(${method.parameters && method.parameters.length > 0 ? method.parameters.map(({name, type}) => `${name}: ${type?.text || 'unknown'}`).join(', ') : ''})${method.return ? `: ${method.return.type?.text}` : '' } => (element.value as any)?.${method.name}(${method.parameters && method.parameters.length > 0 ? method.parameters.map(({name}) => `${name}`).join(', ') : ''})`).join(',\n')}\n});` : '',
         events: events.length > 0 ? `\ndefineEmits<{\n${events.map(x => `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}(event: '${x.name}', payload: ${x.type.text}): void`).join('\n')}\n}>();` : '',
         props: properties.length > 0 ? `defineProps<{\n${properties.map((x) =>
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}${x.name}?: ${x.type?.text};`).join('\n')}\n}>();` : '',
