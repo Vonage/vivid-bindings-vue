@@ -12,6 +12,7 @@ import { PropertiesDecorator } from './decorators/properties.decorator.ts'
 import { PublicMethodsDecorator } from './decorators/public.methods.decorator.ts'
 import { PublicPropertiesDecorator } from './decorators/public.properties.decorator.ts'
 import { SlotsDecorator } from './decorators/slots.decorator.ts'
+import { StylePropertyDecorator } from './decorators/style.property.decorator.ts'
 import { TypeDeclarationsMap, AsyncClassMethod } from './decorators/types.ts'
 import { fillPlaceholders, readTemplate } from './utils.ts'
 
@@ -70,6 +71,7 @@ export const generate = async () => {
       PropertiesDecorator,
       EventsDecorator,
       IconTypeDecorator,
+      StylePropertyDecorator,
       ImportsDecorator
     ],
     async (componentName, tagName,

@@ -89,6 +89,14 @@ export const enumerateVividElements = async (
     for (const decorator of classLikeDecorators.map(
       (decoratorClass: IAbstractClassLikeDecoratorConstructor) => new decoratorClass(classLike, vividIndexJs)
     )) {
+      if (isCssPropertiesDecorator(decorator)) {
+        cssProperties = decorator.decorateCSSProperties(cssProperties)
+      }
+
+      if (isCssPartsDecorator(decorator)) {
+        cssParts = decorator.decorateCSSParts(cssParts)
+      }
+
       if (isPropertiesDecorator(decorator)) {
         properties = decorator.decorateProperties(properties)
       }
@@ -101,14 +109,6 @@ export const enumerateVividElements = async (
         decorator.typeDeclarations.forEach(
           x => typeDeclarations[x.name] = x
         )
-      }
-
-      if (isCssPropertiesDecorator(decorator)) {
-        cssProperties = decorator.decorateCSSProperties(cssProperties)
-      }
-
-      if (isCssPartsDecorator(decorator)) {
-        cssParts = decorator.decorateCSSParts(cssParts)
       }
 
       if (isEventsDecorator(decorator)) {
