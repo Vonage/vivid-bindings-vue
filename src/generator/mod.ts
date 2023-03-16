@@ -41,7 +41,7 @@ export const generate = async () => {
         "build": "vite build"
       },
       dependencies: {
-        "@vonage/vivid": "latest",
+        "@vonage/vivid": vpkg.version,
         "vue": "3.2.47"
       },
       devDependencies: {
