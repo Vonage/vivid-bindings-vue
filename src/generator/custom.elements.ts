@@ -58,7 +58,7 @@ const getValidVividClassDeclarations = async () => {
 
 export const enumerateVividElements = async (
   classLikeDecorators: IAbstractClassLikeDecoratorConstructor[],
-  elementVisitor: (
+  elementVisitor: (props: {
     vueComponentName: string,
     tagName: string,
     properties: ClassField[],
@@ -70,24 +70,24 @@ export const enumerateVividElements = async (
     imports: string[],
     typeDeclarations: TypeDeclarationsMap,
     classDeclaration: ClassLike
-  ) => Promise<void>) => {
+  }) => Promise<void>) => {
   const { classDeclarations, vividIndexJs } = await getValidVividClassDeclarations()
 
-  for await (const classLike of classDeclarations) {
+  for await (const classDeclaration of classDeclarations) {
     const imports = []
     const typeDeclarations: Record<string, TypeDeclaration> = {}
-    const elementName = getClassName(classLike)
-    const componentName = getComponentName(classLike)
+    const elementName = getClassName(classDeclaration)
+    const vueComponentName = getComponentName(classDeclaration)
     const tagName = `${tagPrefix}-${camel2kebab(elementName)}`
-    let properties = classLike.members as ClassField[] || []
-    let methods = classLike.members as ClassMethod[] || []
-    let events = (classLike as CustomElement).events || []
-    let slots = (classLike as CustomElement).slots || []
-    let cssProperties = (classLike as CustomElement).cssProperties || []
-    let cssParts = (classLike as CustomElement).cssParts || []
+    let properties = classDeclaration.members as ClassField[] || []
+    let methods = classDeclaration.members as ClassMethod[] || []
+    let events = (classDeclaration as CustomElement).events || []
+    let slots = (classDeclaration as CustomElement).slots || []
+    let cssProperties = (classDeclaration as CustomElement).cssProperties || []
+    let cssParts = (classDeclaration as CustomElement).cssParts || []
 
     for (const decorator of classLikeDecorators.map(
-      (decoratorClass: IAbstractClassLikeDecoratorConstructor) => new decoratorClass(classLike, vividIndexJs)
+      (decoratorClass: IAbstractClassLikeDecoratorConstructor) => new decoratorClass(classDeclaration, vividIndexJs)
     )) {
       if (isCssPropertiesDecorator(decorator)) {
         cssProperties = decorator.decorateCSSProperties(cssProperties)
@@ -124,8 +124,8 @@ export const enumerateVividElements = async (
       }
     }
 
-    await elementVisitor(
-      componentName,
+    await elementVisitor({
+      vueComponentName,
       tagName,
       properties,
       methods,
@@ -135,7 +135,7 @@ export const enumerateVividElements = async (
       slots,
       imports,
       typeDeclarations,
-      classLike
-    )
+      classDeclaration
+    })
   }
 }

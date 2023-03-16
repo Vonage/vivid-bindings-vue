@@ -85,6 +85,7 @@ export const isCssPartsDecorator = (decorator: IAbstractClassLikeDecorator): dec
 export const isEventsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IEventsDecorator => (decorator as IEventsDecorator).decorateEvents !== undefined;
 export const isSlotsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ISlotsDecorator => (decorator as ISlotsDecorator).decorateSlots !== undefined;
 
+// TODO: possibly rename "Decorator" to "Transformer"
 export abstract class AbstractClassDeclarationDecorator implements IAbstractClassLikeDecorator {
   protected classLike: ClassLike
   protected vividIndexJs: string;

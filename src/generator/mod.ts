@@ -74,13 +74,10 @@ export const generate = async () => {
       StylePropertyDecorator,
       ImportsDecorator
     ],
-    async (componentName, tagName,
-      properties, methods, cssProperties, cssParts,
-      events, slots, imports, typeDeclarations,
-      classDeclaration) => {
-      console.log(componentName)
+    async ({ vueComponentName, tagName, properties, methods, events, slots, imports, typeDeclarations, classDeclaration }) => {
+      console.log(vueComponentName)
       elementsTypeDeclarations = { ...elementsTypeDeclarations, ...typeDeclarations }
-      const componentPackageDir = `${v3Dir}/${componentName}`
+      const componentPackageDir = `${v3Dir}/${vueComponentName}`
       const content = await readTemplate('src/generator/vue.component.template')
       const resultContent = fillPlaceholders(content)({
         componentRegisterMethod: getElementRegistrationFunctionName(classDeclaration),
@@ -90,7 +87,7 @@ export const generate = async () => {
         tagName,
         slot: slots.length > 0 ? `<slot />` : '',
         tagPrefix,
-        methods: methods.length > 0 ? `\nconst element = ref<HTMLElement | null>(null)\ndefineExpose({\n${methods.map((method) => `  ${method.name}: ${(method as AsyncClassMethod).async ? 'async ' : ''}(${method.parameters && method.parameters.length > 0 ? method.parameters.map(({name, type}) => `${name}: ${type?.text || 'unknown'}`).join(', ') : ''})${method.return ? `: ${method.return.type?.text}` : '' } => (element.value as any)?.${method.name}(${method.parameters && method.parameters.length > 0 ? method.parameters.map(({name}) => `${name}`).join(', ') : ''})`).join(',\n')}\n});` : '',
+        methods: methods.length > 0 ? `\nconst element = ref<HTMLElement | null>(null)\ndefineExpose({\n${methods.map((method) => `  ${method.name}: ${(method as AsyncClassMethod).async ? 'async ' : ''}(${method.parameters && method.parameters.length > 0 ? method.parameters.map(({ name, type }) => `${name}: ${type?.text || 'unknown'}`).join(', ') : ''})${method.return ? `: ${method.return.type?.text}` : ''} => (element.value as any)?.${method.name}(${method.parameters && method.parameters.length > 0 ? method.parameters.map(({ name }) => `${name}`).join(', ') : ''})`).join(',\n')}\n});` : '',
         events: events.length > 0 ? `\ndefineEmits<{\n${events.map(x => `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}(event: '${x.name}', payload: ${x.type.text}): void`).join('\n')}\n}>();` : '',
         props: properties.length > 0 ? `defineProps<{\n${properties.map((x) =>
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}${x.name}?: ${x.type?.text};`).join('\n')}\n}>();` : '',
