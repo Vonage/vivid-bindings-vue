@@ -17,11 +17,11 @@ export const getNthGroupMatch = (
   } while (regexResult)
   return result
 }
-export const readTemplate = async (
+const readTemplate = async (
   name = ''
 ): Promise<string | undefined> => {
   const decoder = new TextDecoder('utf-8')
   return decoder.decode(await Deno.readFile(name))
 }
-export const fillPlaceholders = (input?: string) => (substitutions: Record<string, string>) =>
-  Object.entries(substitutions).reduce((input, [key, value]) => (input || '').replaceAll(`<%= ${key} %>`, value), input)
+export const fillPlaceholders = (template?: string) => async (substitutions: Record<string, string>) =>
+  Object.entries(substitutions).reduce((input, [key, value]) => (input || '').replaceAll(`<%= ${key} %>`, value), await readTemplate(template))

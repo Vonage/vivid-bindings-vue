@@ -13,44 +13,23 @@ import { PublicPropertiesDecorator } from './decorators/public.properties.decora
 import { SlotsDecorator } from './decorators/slots.decorator.ts'
 import { StylePropertyDecorator } from './decorators/style.property.decorator.ts'
 import { TypeDeclarationsMap, AsyncClassMethod } from './decorators/types.ts'
-import { fillPlaceholders, readTemplate } from './utils.ts'
+import { fillPlaceholders } from './utils.ts'
 
 export const generate = async () => {
+  const templatesFolder = 'src/generator/templates'
   const packageDir = 'package'
   const packageGeneratedSrcDir = `${packageDir}/src/generated`
   const v3Dir = `${packageDir}/v3`
   await ensureDir(packageDir)
 
-  /// package.json
   await Deno.writeFile(
     `${packageDir}/package.json`,
-    new TextEncoder().encode(JSON.stringify({
-      name: npmPackageName,
-      version: vpkg.version,
-      main: "./dist/index.cjs.js",
-      browser: "./dist/index.umd.js",
-      module: "./dist/index.es.js",
-      types: "./dist/index.d.ts",
-      repository: {
-        "type": "git",
-        "url": "https://github.com/Vonage/vivid-bindings-vue"
-      },
-      license: "Apache-2.0",
-      scripts: {
-        "build": "vite build"
-      },
-      dependencies: {
-        "@vonage/vivid": vpkg.version,
-        "vue": "3.2.47"
-      },
-      devDependencies: {
-        "tslib": "2.4.1",
-        "typescript": "4.9.4",
-        "vite": "4.1.4",
-        "vitest": "0.28.5",
-        "vite-plugin-dts": "1.7.1"
-      }
-    }, null, '  '))
+    new TextEncoder().encode(
+      await fillPlaceholders(`${templatesFolder}/root.package.json.template`)({
+        npmPackageName,
+        vividPackageVersion: vpkg.version
+      })
+    )
   )
 
   await ensureDir(packageGeneratedSrcDir)
@@ -76,11 +55,8 @@ export const generate = async () => {
       console.log(vueComponentName)
       elementsTypeDeclarations = { ...elementsTypeDeclarations, ...typeDeclarations }
       const componentPackageDir = `${v3Dir}/${vueComponentName}`
-      const content = await readTemplate('src/generator/vue.component.template')
-      const resultContent = fillPlaceholders(content)({
+      const vueComponentCode = await fillPlaceholders(`${templatesFolder}/vue.component.template`)({
         componentRegisterMethod: getElementRegistrationFunctionName(classDeclaration),
-        jsonModel: JSON.stringify(classDeclaration, null, ' '),
-        componentJsdoc: classDeclaration.description ? `<!-- ${classDeclaration.description} -->` : '',
         imports: imports.join('\n'),
         tagName,
         slot: slots.length > 0 ? `<slot />` : '',
@@ -97,19 +73,21 @@ export const generate = async () => {
       })
       await ensureDir(componentPackageDir)
       await Deno.writeFile(
+        `${componentPackageDir}/definition.json`,
+        new TextEncoder().encode(JSON.stringify(classDeclaration, null, ' '))
+      )
+      await Deno.writeFile(
         `${componentPackageDir}/package.json`,
-        new TextEncoder().encode(JSON.stringify({
-          name: `${npmPackageName}-${tagName}`,
-          version: vpkg.version,
-          main: 'index.vue',
-          dependencies: {
-            '@vonage/vivid': vpkg.version
-          }
-        }, null, ' '))
+        new TextEncoder().encode(
+          await fillPlaceholders(`${templatesFolder}/component.package.json.template`)({
+            npmPackageName: `${npmPackageName}-${tagName}`,
+            vividPackageVersion: vpkg.version
+          })
+        )
       )
       await Deno.writeFile(
         `${componentPackageDir}/index.vue`,
-        new TextEncoder().encode(resultContent)
+        new TextEncoder().encode(vueComponentCode)
       )
     }
   )
