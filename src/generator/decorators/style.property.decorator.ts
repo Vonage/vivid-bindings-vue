@@ -46,7 +46,7 @@ export class StylePropertyDecorator extends AbstractClassDeclarationDecorator im
           (prop.name === 'style') && this.isCustomPropertyApplicable
         )
       ) {
-        prop.type.text = `CSSProperties & {\n${this.cssProperties.map(({ name, description, syntax }) => `    /**\n    * ${description}\n    */\n    '${name}': ${this.tsTypeFromCssType(syntax)}`).join('\n')}\n}`
+        prop.type.text = `CSSProperties & {\n${this.cssProperties.map(({ name, description, syntax }) => `    /**\n    * ${description}\n    */\n    '${name}': ${this.tsTypeFromCssType(syntax)}`).join('\n')}\n  }`
         prop.description = `Inline styles object includes standard CSSProperties plus custom css variables suitable for this Vivid element`
       }
       return prop

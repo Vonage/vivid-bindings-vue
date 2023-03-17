@@ -17,7 +17,7 @@ export interface IAbstractClassLikeDecorator {
 }
 
 export interface IAbstractClassLikeDecoratorConstructor {
-  new(classLike: ClassLike, vividIndexJs: string): IAbstractClassLikeDecorator
+  new(classLike: ClassLike, componentDefinitions: string[]): IAbstractClassLikeDecorator
 }
 
 export interface IImportsProviderDecorator extends IAbstractClassLikeDecorator {
@@ -88,11 +88,11 @@ export const isSlotsDecorator = (decorator: IAbstractClassLikeDecorator): decora
 // TODO: possibly rename "Decorator" to "Transformer"
 export abstract class AbstractClassDeclarationDecorator implements IAbstractClassLikeDecorator {
   protected classLike: ClassLike
-  protected vividIndexJs: string;
+  protected componentDefinitions: string[];
 
-  constructor (classLike: ClassLike, vividIndexJs: string) {
+  constructor (classLike: ClassLike, componentDefinitions: string[]) {
     this.classLike = classLike
-    this.vividIndexJs = vividIndexJs
+    this.componentDefinitions = componentDefinitions
   }
 
   get className(): string {

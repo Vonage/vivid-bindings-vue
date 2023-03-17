@@ -1,3 +1,4 @@
+import { escapeStringRegexp } from 'https://raw.githubusercontent.com/Sab94/escape-string-regexp/master/mod.ts'
 import { ClassField, ClassMethod } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { getElementRegistrationFunctionName } from '../custom.elements.ts'
 import {
@@ -46,6 +47,8 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
   }
 
   protected isVividExportedType(typeName: string): boolean {
-    return this.vividIndexJs.indexOf(`as ${typeName}`) > 0
+    return this.componentDefinitions.find(definitionText =>
+      new RegExp(`export.*\{.*${escapeStringRegexp(typeName)}.*\}`, 'g').test(definitionText)
+    )
   }
 }

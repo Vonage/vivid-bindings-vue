@@ -1,6 +1,5 @@
 import { ensureDir } from 'https://deno.land/std@0.137.0/fs/ensure_dir.ts'
 
-// import api from 'https://esm.sh/@vonage/vivid@latest/vivid.api.json' assert { type: "json" }
 import vpkg from 'https://esm.sh/@vonage/vivid@latest/package.json' assert { type: "json" }
 import { markdownFolder, npmPackageName, tagPrefix, versionFile } from '../consts.ts'
 import { enumerateVividElements, getElementRegistrationFunctionName } from './custom.elements.ts'
@@ -60,7 +59,6 @@ export const generate = async () => {
     new TextEncoder().encode(`export const tagPrefix = '${tagPrefix}'\n`)
   )
 
-  console.log('Generating VueJs components...')
   let elementsTypeDeclarations: TypeDeclarationsMap = {}
   await enumerateVividElements(
     [

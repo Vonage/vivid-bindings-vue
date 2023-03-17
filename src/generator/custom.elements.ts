@@ -24,7 +24,7 @@ import {
   isImportsProviderDecorator,
   isMethodsDecorator
 } from './decorators/types.ts'
-import { camel2kebab } from './utils.ts'
+import { camel2kebab, getNthGroupMatch } from './utils.ts'
 
 export const ClassNameAlias: Record<string, string> = {
   ListboxOption: 'Option'
@@ -34,9 +34,28 @@ export const getClassName = (classLike: ClassLike) => ClassNameAlias[classLike.n
 const getComponentName = (classLike: ClassLike) => `Vwc${getClassName(classLike)}`
 export const getElementRegistrationFunctionName = (classLike: ClassLike) => `register${getClassName(classLike)}`
 
+const getComponentsDefinitions = async () => {
+  const libFolderUrl = 'https://unpkg.com/@vonage/vivid@latest/lib'
+  const vComponentsIndexResponse = await fetch(`${libFolderUrl}/components.d.ts`)
+  const componentsIndex = await vComponentsIndexResponse.text()
+  const componentDefinitionsUrls = componentsIndex.split('\n')
+    .map((exportStatement: string) => getNthGroupMatch(/'\.(.*)'/g, exportStatement))
+    .filter(x => x)
+    .map(x => `${libFolderUrl}${x}.d.ts`)
+
+  const componentDefinitions = []
+  console.info(`Downloading elements definitions`)
+  for await (const componentDefinitionUrl of componentDefinitionsUrls) {
+    const response = await fetch(componentDefinitionUrl)
+    const componentDefinitionText = await response.text()
+    componentDefinitions.push(componentDefinitionText)
+    console.info(`${componentDefinitionUrl}...`)
+  }
+  return { componentDefinitions }
+}
+
 const getValidVividClassDeclarations = async () => {
-  const vIndexJsResponse = await fetch('https://unpkg.com/@vonage/vivid@latest/index.js')
-  const vividIndexJs = await vIndexJsResponse.text()
+  const { componentDefinitions } = await getComponentsDefinitions()
   const classDeclarations = (customElements as Package).modules.reduce
     ((acc, { declarations }) =>
       [
@@ -46,13 +65,13 @@ const getValidVividClassDeclarations = async () => {
       ,
       [] as Declaration[]
     ) as ClassLike[]
-  const invalidClassDeclarations = classDeclarations.filter((x) => vividIndexJs.indexOf(getElementRegistrationFunctionName(x)) < 0).map(({ name }) => name)
+  const invalidClassDeclarations = classDeclarations.filter((x) => !componentDefinitions.find(definitionText => definitionText.indexOf(getElementRegistrationFunctionName(x)) > 0)).map(({ name }) => name)
   if (invalidClassDeclarations.length > 0) {
-    console.info(`Found incorrectly exported Vivid elements: ${invalidClassDeclarations.join(', ')}`)
+    console.error(`Found incorrectly exported Vivid elements: ${invalidClassDeclarations.join(', ')}`)
   }
   return {
     classDeclarations: classDeclarations.filter(({ name }) => invalidClassDeclarations.indexOf(name) < 0),
-    vividIndexJs
+    componentDefinitions
   }
 }
 
@@ -71,7 +90,7 @@ export const enumerateVividElements = async (
     typeDeclarations: TypeDeclarationsMap,
     classDeclaration: ClassLike
   }) => Promise<void>) => {
-  const { classDeclarations, vividIndexJs } = await getValidVividClassDeclarations()
+  const { classDeclarations, componentDefinitions } = await getValidVividClassDeclarations()
 
   for await (const classDeclaration of classDeclarations) {
     const imports = []
@@ -87,7 +106,7 @@ export const enumerateVividElements = async (
     let cssParts = (classDeclaration as CustomElement).cssParts || []
 
     for (const decorator of classLikeDecorators.map(
-      (decoratorClass: IAbstractClassLikeDecoratorConstructor) => new decoratorClass(classDeclaration, vividIndexJs)
+      (decoratorClass: IAbstractClassLikeDecoratorConstructor) => new decoratorClass(classDeclaration, componentDefinitions)
     )) {
       if (isCssPropertiesDecorator(decorator)) {
         cssProperties = decorator.decorateCSSProperties(cssProperties)
