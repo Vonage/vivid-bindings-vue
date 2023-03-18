@@ -12,7 +12,6 @@ import {
 } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { tagPrefix } from '../consts.ts'
 import {
-  TypeDeclaration,
   TypeDeclarationsMap,
   IAbstractClassLikeDecoratorConstructor,
   isPropertiesDecorator,
@@ -95,23 +94,32 @@ export interface IVividElementVisitorContext {
   events: Event[]
   slots: Slot[]
   imports: string[]
-  typeDeclarations: TypeDeclarationsMap
   classDeclaration: ClassLike
 }
+export interface IVividElementsSharedContext {
+  /**
+   * Shared type declarations dynamically emitted by the decorators
+   */
+  typeDeclarations: TypeDeclarationsMap
+}
+
 
 /**
  * Enumerates all properly exported Vivid custom elements
  * @param classLikeDecorators a list of decorator classes to be instantiated & applied *before* visiting the element by the visitor function
  * @param elementVisitor passes `IVividElementVisitorContext` to the visitor function
+ * @returns `IVividElementsSharedContext` shared elements context built dynamically by the decorators
  */
 export const enumerateVividElements = async (
   classLikeDecorators: IAbstractClassLikeDecoratorConstructor[],
-  elementVisitor: (context: IVividElementVisitorContext) => Promise<void>) => {
+  elementVisitor: (context: IVividElementVisitorContext) => Promise<void>): Promise<IVividElementsSharedContext> => {
   const { classDeclarations, componentDefinitions } = await getValidVividClassDeclarations()
+  const result = <IVividElementsSharedContext>{
+    typeDeclarations: {}
+  }
 
   for await (const classDeclaration of classDeclarations) {
     const imports = []
-    const typeDeclarations: Record<string, TypeDeclaration> = {}
     let properties = classDeclaration.members as ClassField[] || []
     let methods = classDeclaration.members as ClassMethod[] || []
     let events = (classDeclaration as CustomElement).events || []
@@ -140,7 +148,7 @@ export const enumerateVividElements = async (
 
       if (isTypeDeclarationsProviderDecorator(decorator)) {
         decorator.typeDeclarations.forEach(
-          x => typeDeclarations[x.name] = x
+          x => result.typeDeclarations[x.name] = x
         )
       }
 
@@ -167,8 +175,9 @@ export const enumerateVividElements = async (
       events,
       slots,
       imports,
-      typeDeclarations,
       classDeclaration
     })
   }
+
+  return result
 }

@@ -12,7 +12,6 @@ import { PublicMethodsDecorator } from './decorators/public.methods.decorator.ts
 import { PublicPropertiesDecorator } from './decorators/public.properties.decorator.ts'
 import { SlotsDecorator } from './decorators/slots.decorator.ts'
 import { StylePropertyDecorator } from './decorators/style.property.decorator.ts'
-import { TypeDeclarationsMap } from './decorators/types.ts'
 import { renderVividVueComponent } from './render.vue.component.ts'
 import { fillPlaceholders } from './utils.ts'
 
@@ -39,8 +38,7 @@ export const generate = async () => {
     new TextEncoder().encode(`export const tagPrefix = '${tagPrefix}'\n`)
   )
 
-  let elementsSharedTypeDeclarations: TypeDeclarationsMap = {}
-  await enumerateVividElements(
+  const { typeDeclarations } = await enumerateVividElements(
     [
       PublicPropertiesDecorator,
       PublicMethodsDecorator,
@@ -52,9 +50,8 @@ export const generate = async () => {
       StylePropertyDecorator,
       ImportsDecorator
     ],
-    async ({ vueComponentName, tagName, properties, methods, events, slots, imports, typeDeclarations, classDeclaration }) => {
+    async ({ vueComponentName, tagName, properties, methods, events, slots, imports, classDeclaration }) => {
       console.log(vueComponentName)
-      elementsSharedTypeDeclarations = { ...elementsSharedTypeDeclarations, ...typeDeclarations }
       const componentPackageDir = `${v3Dir}/${vueComponentName}`
       await ensureDir(componentPackageDir)
       await Deno.writeFile(
@@ -81,8 +78,8 @@ export const generate = async () => {
 
   await Deno.writeFile(
     `${packageGeneratedSrcDir}/types.ts`,
-    new TextEncoder().encode(Object.entries(elementsSharedTypeDeclarations)
-      .map(([name, { declaration }]) => `export type ${name} = ${declaration}`).join('\n'))
+    new TextEncoder().encode(Object.entries(typeDeclarations)
+      .map(([name, { declaration, description }]) => `/**\n*  ${description}\n*/\nexport type ${name} = ${declaration.text}`).join('\n'))
   )
 
   for await (const stylesFile of [

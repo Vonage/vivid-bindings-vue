@@ -1,4 +1,4 @@
-import { ClassLike, Event, ClassField, Slot, CssCustomProperty, CssPart, ClassMethod } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { ClassLike, Event, ClassField, Slot, CssCustomProperty, CssPart, ClassMethod, Type } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { getClassName } from '../custom.elements.ts'
 
 export type AsyncClassMethod = ClassMethod & {
@@ -7,7 +7,8 @@ export type AsyncClassMethod = ClassMethod & {
 
 export type TypeDeclaration = {
   name: string
-  declaration: string
+  description: string
+  declaration: Type
 }
 
 export type TypeDeclarationsMap = Record<string, TypeDeclaration>

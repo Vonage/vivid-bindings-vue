@@ -46,9 +46,8 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
     return properties
   }
 
-  protected isVividExportedType(typeName: string): boolean {
-    return this.componentDefinitions.find(definitionText =>
+  protected isVividExportedType = (typeName: string): boolean =>
+    !!this.componentDefinitions.find(definitionText =>
       new RegExp(`export.*\{.*${escapeStringRegexp(typeName)}.*\}`, 'g').test(definitionText)
     )
-  }
 }

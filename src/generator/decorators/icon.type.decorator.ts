@@ -44,6 +44,10 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
     return this.isIconClass || this.isIconCapableClass
   }
 
+  get typeDescription() {
+    return `Icon id. One of ${this.iconDescriptors.length} icons. Catalog with preview/search can be found at https://icons.vivid.vonage.com`
+  }
+
   decorateProperties = (properties: ClassField[]) => properties.map(
     (prop: ClassField) => {
       if (prop.type &&
@@ -53,7 +57,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
         )
       ) {
         prop.type.text = IconTypeDecorator.typeName
-        prop.description = `Icon id. One of ${this.iconDescriptors.length} icons. Catalog with preview/search can be found at https://icons.vivid.vonage.com`
+        prop.description = this.typeDescription
       }
       return prop
     }
@@ -72,7 +76,8 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
     return [
       {
         name: IconTypeDecorator.typeName,
-        declaration: `${this.iconDescriptors.map(({ id }) => `'${id}'`).join('\n | ')}`
+        description: this.typeDescription,
+        declaration: { text:`${this.iconDescriptors.map(({ id }) => `'${id}'`).join('\n | ')}` }
       }
     ]
   }
