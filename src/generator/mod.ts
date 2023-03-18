@@ -69,12 +69,13 @@ export const generate = async () => {
         new TextEncoder().encode(
           await fillPlaceholders(`${templatesFolder}/component.package.json.template`)({
             npmPackageName: `${npmPackageName}-${tagName}`,
-            vividPackageVersion: vpkg.version
+            vividPackageVersion: vpkg.version,
+            vueComponentName
           })
         )
       )
       await Deno.writeFile(
-        `${componentPackageDir}/index.vue`,
+        `${componentPackageDir}/${vueComponentName}.vue`,
         new TextEncoder().encode(await renderVividVueComponent(`${templatesFolder}/vue.component.template`, {
           properties, methods, events, slots, imports, tagName, tagPrefix, classDeclaration
         }))

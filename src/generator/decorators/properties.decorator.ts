@@ -29,7 +29,7 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
       name: "supportedSlots",
       description: this.supportedSlotsPropertyDescription,
       type: {
-        text: "string"
+        text: "never"
       }
     }
   }

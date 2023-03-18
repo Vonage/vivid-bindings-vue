@@ -1,7 +1,7 @@
 {
   "name": "<%= npmPackageName %>",
   "version": "<%= vividPackageVersion %>",
-  "main": "index.vue",
+  "main": "<%= vueComponentName %>.vue",
   "dependencies": {
     "@vonage/vivid": "<%= vividPackageVersion %>"
   }
