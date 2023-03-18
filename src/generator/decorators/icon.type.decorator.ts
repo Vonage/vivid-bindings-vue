@@ -66,7 +66,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
   get imports(): string[] {
     if (this.isTargetClass) {
       return [
-        `import { ${IconTypeDecorator.typeName} } from '../../src/generated/types'` // TODO: repoint to `npmPackageName` when at least one package version published
+        `import { ${IconTypeDecorator.typeName} } from '../../src/generated/types'`
       ]
     }
     return []

@@ -103,7 +103,6 @@ export interface IVividElementsSharedContext {
   typeDeclarations: TypeDeclarationsMap
 }
 
-
 /**
  * Enumerates all properly exported Vivid custom elements
  * @param classLikeDecorators a list of decorator classes to be instantiated & applied *before* visiting the element by the visitor function

@@ -83,6 +83,12 @@ function handleClick(e:PointerEvent) {}
 
 This package has a `pipeline` workflow which is checking for a new Vivid version on a weekly basis and if it detects that new version is out The new bindings are generated and published automatically, reflecting the same package version `@vonage/vivid` has.
 
+## Repository structure
+
+The entire repository is a pure Typescript code, divided onto two main parts
+- `./src` - is the [Deno](https://deno.land) territory, contains the generator code, which is effectively generates the NPM package contents on top of the existing template
+- `./package` - is the [NPM](https://www.npmjs.com/package/@vonage/vivid-bindings-vue) package template
+
 ## Rationale
 
 * Vivid web components since version 3.0 are shipped with the custom elements meta data alongside the code itself.

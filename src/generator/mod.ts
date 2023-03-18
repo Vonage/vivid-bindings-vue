@@ -15,9 +15,15 @@ import { StylePropertyDecorator } from './decorators/style.property.decorator.ts
 import { renderVividVueComponent } from './render.vue.component.ts'
 import { fillPlaceholders } from './utils.ts'
 
+/**
+ * Enumerates all valid Vivid custom elements and generates the output to the `./package` folder
+ * The output consists of
+ *  - `./package/src/generated`  (generated typescript files)
+ *  - `./package/v3` (generated Vuejs3 components as bindings for Vivid3 in the SFC format https://vuejs.org/api/sfc-spec.html#overview)
+ */
 export const generate = async () => {
-  const templatesFolder = 'src/generator/templates'
   const packageDir = 'package'
+  const templatesFolder = 'src/generator/templates'
   const packageGeneratedSrcDir = `${packageDir}/src/generated`
   const v3Dir = `${packageDir}/v3`
   await ensureDir(packageDir)
