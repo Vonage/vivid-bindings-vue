@@ -2,7 +2,7 @@ import { ensureDir } from 'https://deno.land/std@0.137.0/fs/ensure_dir.ts'
 
 import vpkg from 'https://esm.sh/@vonage/vivid@latest/package.json' assert { type: "json" }
 import { markdownFolder, npmPackageName, tagPrefix, versionFile } from '../consts.ts'
-import { enumerateVividElements, getElementRegistrationFunctionName } from './custom.elements.ts'
+import { enumerateVividElements } from './custom.elements.ts'
 import { CssPropertiesDecorator } from './decorators/css.properties.decorator.ts'
 import { EventsDecorator } from './decorators/events.decorator.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
@@ -12,7 +12,8 @@ import { PublicMethodsDecorator } from './decorators/public.methods.decorator.ts
 import { PublicPropertiesDecorator } from './decorators/public.properties.decorator.ts'
 import { SlotsDecorator } from './decorators/slots.decorator.ts'
 import { StylePropertyDecorator } from './decorators/style.property.decorator.ts'
-import { TypeDeclarationsMap, AsyncClassMethod } from './decorators/types.ts'
+import { TypeDeclarationsMap } from './decorators/types.ts'
+import { renderVividVueComponent } from './render.vue.component.ts'
 import { fillPlaceholders } from './utils.ts'
 
 export const generate = async () => {
@@ -38,7 +39,7 @@ export const generate = async () => {
     new TextEncoder().encode(`export const tagPrefix = '${tagPrefix}'\n`)
   )
 
-  let elementsTypeDeclarations: TypeDeclarationsMap = {}
+  let elementsSharedTypeDeclarations: TypeDeclarationsMap = {}
   await enumerateVividElements(
     [
       PublicPropertiesDecorator,
@@ -53,24 +54,8 @@ export const generate = async () => {
     ],
     async ({ vueComponentName, tagName, properties, methods, events, slots, imports, typeDeclarations, classDeclaration }) => {
       console.log(vueComponentName)
-      elementsTypeDeclarations = { ...elementsTypeDeclarations, ...typeDeclarations }
+      elementsSharedTypeDeclarations = { ...elementsSharedTypeDeclarations, ...typeDeclarations }
       const componentPackageDir = `${v3Dir}/${vueComponentName}`
-      const vueComponentCode = await fillPlaceholders(`${templatesFolder}/vue.component.template`)({
-        componentRegisterMethod: getElementRegistrationFunctionName(classDeclaration),
-        imports: imports.join('\n'),
-        tagName,
-        slot: slots.length > 0 ? `<slot />` : '',
-        tagPrefix,
-        methods: methods.length > 0 ? `\nconst element = ref<HTMLElement | null>(null)\ndefineExpose({\n${methods.map((method) => `  ${method.name}: ${(method as AsyncClassMethod).async ? 'async ' : ''}(${method.parameters && method.parameters.length > 0 ? method.parameters.map(({ name, type }) => `${name}: ${type?.text || 'unknown'}`).join(', ') : ''})${method.return ? `: ${method.return.type?.text}` : ''} => (element.value as any)?.${method.name}(${method.parameters && method.parameters.length > 0 ? method.parameters.map(({ name }) => `${name}`).join(', ') : ''})`).join(',\n')}\n});` : '',
-        events: events.length > 0 ? `\ndefineEmits<{\n${events.map(x => `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}(event: '${x.name}', payload: ${x.type.text}): void`).join('\n')}\n}>();` : '',
-        props: properties.length > 0 ? `defineProps<{\n${properties.map((x) =>
-          `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''}${x.name}?: ${x.type?.text};`).join('\n')}\n}>();` : '',
-        tagProps: [
-          ...(methods.length > 0 ? ['    ref="element"'] : []),
-          ...properties.map((x) => `    :${x.name}="${x.name}"`),
-          ...events.map((x) => `    @${x.name}="$emit('${x.name}', $event)"`)
-        ].join('\n')
-      })
       await ensureDir(componentPackageDir)
       await Deno.writeFile(
         `${componentPackageDir}/definition.json`,
@@ -87,14 +72,16 @@ export const generate = async () => {
       )
       await Deno.writeFile(
         `${componentPackageDir}/index.vue`,
-        new TextEncoder().encode(vueComponentCode)
+        new TextEncoder().encode(await renderVividVueComponent(`${templatesFolder}/vue.component.template`, {
+          properties, methods, events, slots, imports, tagName, tagPrefix, classDeclaration
+        }))
       )
     }
   )
 
   await Deno.writeFile(
     `${packageGeneratedSrcDir}/types.ts`,
-    new TextEncoder().encode(Object.entries(elementsTypeDeclarations)
+    new TextEncoder().encode(Object.entries(elementsSharedTypeDeclarations)
       .map(([name, { declaration }]) => `export type ${name} = ${declaration}`).join('\n'))
   )
 

@@ -26,7 +26,10 @@ import {
 } from './decorators/types.ts'
 import { camel2kebab, getNthGroupMatch } from './utils.ts'
 
-export const ClassNameAlias: Record<string, string> = {
+/**
+ * Some Vivid custom elements classes breaks the naming convention, this map is needed to mitigate that fact
+ */
+const ClassNameAlias: Record<string, string> = {
   ListboxOption: 'Option'
 }
 
@@ -75,29 +78,40 @@ const getValidVividClassDeclarations = async () => {
   }
 }
 
+export interface IVividElementsContext {
+  /**
+   * Custom element tag prefix to be used for Vivid tag elements
+   * https://vivid.deno.dev/getting-started/advanced#scoped-elements-alpha
+   */
+  tagPrefix: string
+}
+export interface IVividElementVisitorContext {
+  vueComponentName: string
+  tagName: string
+  properties: ClassField[]
+  methods: ClassMethod[]
+  cssProperties: CssCustomProperty[]
+  cssParts: CssPart[]
+  events: Event[]
+  slots: Slot[]
+  imports: string[]
+  typeDeclarations: TypeDeclarationsMap
+  classDeclaration: ClassLike
+}
+
+/**
+ * Enumerates all properly exported Vivid custom elements
+ * @param classLikeDecorators a list of decorator classes to be instantiated & applied *before* visiting the element by the visitor function
+ * @param elementVisitor passes `IVividElementVisitorContext` to the visitor function
+ */
 export const enumerateVividElements = async (
   classLikeDecorators: IAbstractClassLikeDecoratorConstructor[],
-  elementVisitor: (props: {
-    vueComponentName: string,
-    tagName: string,
-    properties: ClassField[],
-    methods: ClassMethod[],
-    cssProperties: CssCustomProperty[],
-    cssParts: CssPart[],
-    events: Event[],
-    slots: Slot[],
-    imports: string[],
-    typeDeclarations: TypeDeclarationsMap,
-    classDeclaration: ClassLike
-  }) => Promise<void>) => {
+  elementVisitor: (context: IVividElementVisitorContext) => Promise<void>) => {
   const { classDeclarations, componentDefinitions } = await getValidVividClassDeclarations()
 
   for await (const classDeclaration of classDeclarations) {
     const imports = []
     const typeDeclarations: Record<string, TypeDeclaration> = {}
-    const elementName = getClassName(classDeclaration)
-    const vueComponentName = getComponentName(classDeclaration)
-    const tagName = `${tagPrefix}-${camel2kebab(elementName)}`
     let properties = classDeclaration.members as ClassField[] || []
     let methods = classDeclaration.members as ClassMethod[] || []
     let events = (classDeclaration as CustomElement).events || []
@@ -144,8 +158,8 @@ export const enumerateVividElements = async (
     }
 
     await elementVisitor({
-      vueComponentName,
-      tagName,
+      vueComponentName: getComponentName(classDeclaration),
+      tagName: `${tagPrefix}-${camel2kebab(getClassName(classDeclaration))}`,
       properties,
       methods,
       cssProperties,
