@@ -1,8 +1,12 @@
 import { ClassLike, Event, ClassField, Slot, CssCustomProperty, CssPart, ClassMethod, Type } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
-import { getClassName } from '../custom.elements.ts'
+import { getClassName, getTagName } from '../custom.elements.ts'
 
 export type AsyncClassMethod = ClassMethod & {
   async?: boolean
+}
+
+export type InlineClassMethod = ClassMethod & {
+  body?: string
 }
 
 export type TypeDeclaration = {
@@ -98,5 +102,9 @@ export abstract class AbstractClassDeclarationDecorator implements IAbstractClas
 
   get className(): string {
     return getClassName(this.classLike!)
+  }
+
+  get tagName(): string {
+    return getTagName(this.classLike!)
   }
 }

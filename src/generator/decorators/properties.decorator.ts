@@ -1,13 +1,16 @@
-import { ClassField } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { ClassField, Slot } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import {
   AbstractClassDeclarationDecorator,
-  IPropertiesDecorator
+  IPropertiesDecorator,
+  ISlotsDecorator
 } from "./types.ts"
 
 /**
  * Adds missing properties declarations, due to incomplete Vivid elements meta data
+ * Adds supported Slots documentation on synthetic property `supportedSlots`
  */
 export class PropertiesDecorator extends AbstractClassDeclarationDecorator implements
+  ISlotsDecorator,
   IPropertiesDecorator {
 
   styleProperty = <ClassField>{
@@ -19,13 +22,24 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
     }
   }
 
-  slotProperty = <ClassField>{
-    kind: "field",
-    name: "slot",
-    description: 'Indicates the target slot name to be injected to',
-    type: {
-      text: "string"
+  get supportedSlotsProperty(): ClassField {
+    return {
+      kind: "field",
+      static: true,
+      name: "supportedSlots",
+      description: this.supportedSlotsPropertyDescription,
+      type: {
+        text: "string"
+      }
     }
+  }
+
+  get hasNonDefaultSlots(): boolean {
+    return this.slots.filter(({ name }) => name).length > 0
+  }
+
+  get supportedSlotsPropertyDescription(): string {
+    return this.slots.filter(({ name }) => name).map(({ name, description }) => `- \`${name}\` - ${description}`).join('\n')
   }
 
   iconProperty = <ClassField>{
@@ -96,9 +110,16 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
     ]
   }
 
+  protected slots: Slot[] = []
+
+  decorateSlots = (slots: Slot[]) => {
+    this.slots = slots
+    return slots
+  }
+
   decorateProperties = (properties: ClassField[]) =>
     [
-      this.slotProperty,
+      ...(this.hasNonDefaultSlots ? [this.supportedSlotsProperty] : []),
       this.styleProperty,
       ...properties,
       ...(this.extraPropertiesMap[this.className] ?? [])

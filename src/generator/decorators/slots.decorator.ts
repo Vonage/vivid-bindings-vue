@@ -10,8 +10,9 @@ import {
 export class SlotsDecorator extends AbstractClassDeclarationDecorator implements
 ISlotsDecorator {
 
-  contentSlot = {
-    name: ''
+  contentSlot = <Slot>{
+    name: '',
+    description: 'Default content slot'
   }
 
   extraSlotsMap: Record<string, Slot[]> = {
@@ -25,7 +26,7 @@ ISlotsDecorator {
       this.contentSlot
     ],
     Avatar: [
-      { name: 'graphic' }
+      { name: 'graphic', description: 'Avatar image' }
     ],
     Banner: [
       { name: 'action-items', description: 'Nodes assigned to action-items slot will be set at the end of the container.' }

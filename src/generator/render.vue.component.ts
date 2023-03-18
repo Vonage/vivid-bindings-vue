@@ -1,28 +1,28 @@
 import { ClassMethod, ClassField, Event } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { getElementRegistrationFunctionName, IVividElementsContext, IVividElementVisitorContext } from './custom.elements.ts'
-import { AsyncClassMethod } from './decorators/types.ts'
+import { AsyncClassMethod, InlineClassMethod } from './decorators/types.ts'
 import { fillPlaceholders } from './utils.ts'
 
 const renderMethods = (methods: ClassMethod[]): string =>
   methods.length > 0 ? (
     `\nconst element = ref<HTMLElement | null>(null)\n` +
-    `defineExpose({\n${methods
-      .map((method) =>
-        `  ${method.name
-        }: ${(method as AsyncClassMethod).async ? 'async ' : ''}(${method.parameters && method.parameters.length > 0
-          ? method.parameters
-            .map(
-              ({ name, type }) =>
-                `${name}: ${type?.text || 'unknown'}`
-            )
-            .join(', ')
-          : ''
-        })${method.return ? `: ${method.return.type?.text}` : ''
-        } => (element.value as any)?.${method.name}(${method.parameters && method.parameters.length > 0
+    `defineExpose({\n${methods.map((method) =>
+      `  ${method.description ? `/**\n  *  ${method.description}\n  */\n  ` : ''}${method.name
+      }: ${(method as AsyncClassMethod).async ? 'async ' : ''}(${method.parameters && method.parameters.length > 0
+        ? method.parameters
+          .map(
+            ({ name, type }) =>
+              `${name}: ${type?.text || 'unknown'}`
+          )
+          .join(', ')
+        : ''
+      })${method.return ? `: ${method.return.type?.text}` : ''
+      } => ${(method as InlineClassMethod).body ? (method as InlineClassMethod).body :
+        `(element.value as any)?.${method.name}(${method.parameters && method.parameters.length > 0
           ? method.parameters.map(({ name }) => `${name}`).join(', ')
           : ''
-        })`
-      )
+        })`}`
+    )
       .join(',\n')}\n})`
   ) : ''
 
