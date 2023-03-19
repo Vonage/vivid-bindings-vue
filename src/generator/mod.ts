@@ -95,7 +95,7 @@ export const generate = async () => {
     { name: 'theme.dark', url: 'https://unpkg.com/@vonage/vivid@latest/styles/tokens/theme-dark.css' }
   ]) {
     const response = await fetch(stylesFile.url)
-    const cssText = await response.text()
+    const cssText = (await response.text()).replace(/\/\*# sourceMappingURL=.*\*\//g, '')
     await Deno.writeFile(
       `${packageGeneratedSrcDir}/style.${stylesFile.name}.ts`,
       new TextEncoder().encode(`export default { id: '${stylesFile.name}', css: \`${cssText}\`}`)
