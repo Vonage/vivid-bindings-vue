@@ -56,7 +56,8 @@ export const generate = async () => {
       StylePropertyDecorator,
       ImportsDecorator
     ],
-    async ({ vueComponentName, tagName, properties, methods, events, slots, imports, classDeclaration }) => {
+    async ({ vueComponentName, tagName, properties, methods, events, slots, imports,
+      classDeclaration, vividElementDocUrl }) => {
       console.log(vueComponentName)
       const componentPackageDir = `${v3Dir}/${vueComponentName}`
       await ensureDir(componentPackageDir)
@@ -70,14 +71,15 @@ export const generate = async () => {
           await fillPlaceholders(`${templatesFolder}/component.package.json.template`)({
             npmPackageName: `${npmPackageName}-${tagName}`,
             vividPackageVersion: vpkg.version,
-            vueComponentName
+            vueComponentName,
+            vividElementDocUrl
           })
         )
       )
       await Deno.writeFile(
         `${componentPackageDir}/${vueComponentName}.vue`,
         new TextEncoder().encode(await renderVividVueComponent(`${templatesFolder}/vue.component.template`, {
-          properties, methods, events, slots, imports, tagName, tagPrefix, classDeclaration
+          properties, methods, events, slots, imports, tagName, tagPrefix, classDeclaration, vividElementDocUrl
         }))
       )
     }

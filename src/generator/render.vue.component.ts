@@ -68,10 +68,11 @@ const renderEvents = (
  * @returns code content for .vue SFC file https://vuejs.org/api/sfc-spec.html#sfc-syntax-specification
  */
 export const renderVividVueComponent = async (template: string,
-  { classDeclaration, tagPrefix, tagName, properties, methods, events, slots, imports }:
+  { classDeclaration, tagPrefix, tagName, properties, methods, events, slots, imports, vividElementDocUrl }:
     Partial<IVividElementVisitorContext> & IVividElementsContext
 ) => await fillPlaceholders(template)({
   componentRegisterMethod: getElementRegistrationFunctionName(classDeclaration!),
+  vividElementDocUrl: vividElementDocUrl!,
   imports: imports!.join('\n'),
   tagName: tagName!,
   slot: slots!.length > 0 ? `<slot />` : '',

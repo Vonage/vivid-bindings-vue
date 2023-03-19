@@ -34,6 +34,7 @@ const ClassNameAlias: Record<string, string> = {
 
 export const getClassName = (classLike: ClassLike) => ClassNameAlias[classLike.name] ?? classLike.name
 export const getTagName = (classLike: ClassLike) => `${tagPrefix}-${camel2kebab(getClassName(classLike))}`
+export const getVividElementDocUrl = (classLike: ClassLike) => `https://vivid.deno.dev/components/${camel2kebab(getClassName(classLike))}`
 const getComponentName = (classLike: ClassLike) => `Vwc${getClassName(classLike)}`
 export const getElementRegistrationFunctionName = (classLike: ClassLike) => `register${getClassName(classLike)}`
 
@@ -87,6 +88,7 @@ export interface IVividElementsContext {
 }
 export interface IVividElementVisitorContext {
   vueComponentName: string
+  vividElementDocUrl: string
   tagName: string
   properties: ClassField[]
   methods: ClassMethod[]
@@ -168,6 +170,7 @@ export const enumerateVividElements = async (
     await elementVisitor({
       vueComponentName: getComponentName(classDeclaration),
       tagName: getTagName(classDeclaration),
+      vividElementDocUrl: getVividElementDocUrl(classDeclaration),
       properties,
       methods,
       cssProperties,

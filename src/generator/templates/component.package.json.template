@@ -2,6 +2,7 @@
   "name": "<%= npmPackageName %>",
   "version": "<%= vividPackageVersion %>",
   "main": "<%= vueComponentName %>.vue",
+  "homepage": "<%= vividElementDocUrl %>",
   "dependencies": {
     "@vonage/vivid": "<%= vividPackageVersion %>"
   }
