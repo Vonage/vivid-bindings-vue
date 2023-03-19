@@ -16,7 +16,7 @@ export class PublicPropertiesDecorator extends AbstractClassDeclarationDecorator
 
   decorateProperties = (properties: ClassField[]) =>
     properties.filter(
-      (member) => member.kind === 'field' &&
+      (member) => member.kind === 'field' && !member.name.startsWith('_') &&
         (member.privacy ?? 'public') === 'public').filter(
           (member) => member as ReadOnlyClassField ? (member as ReadOnlyClassField).readonly !== true : true
         )

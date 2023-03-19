@@ -126,13 +126,13 @@ export class CssPropertiesDecorator extends AbstractClassDeclarationDecorator im
 
   decorateCSSProperties = (properties: CssCustomProperty[]) =>
     [
-      ...properties,
+      ...properties.filter(({name}) => name),
       ...(this.extraPropertiesMap[this.className] ?? [])
     ]
 
   decorateCSSParts = (parts: CssPart[]) =>
     [
-      ...parts,
+      ...parts.filter(({name}) => name),
       ...(this.extraPartsMap[this.className] ?? [])
     ]
 }

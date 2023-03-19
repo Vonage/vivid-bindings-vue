@@ -43,7 +43,7 @@ const renderProps = (
       .map(
         (x) =>
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
-          }${x.name}?: ${x.type?.text}`
+          }${x.name}?: ${x.type ? x.type.text : 'any'}`
       )
       .join('\n')}\n}>()`
     : ''
