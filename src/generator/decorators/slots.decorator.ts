@@ -88,7 +88,7 @@ ISlotsDecorator {
       this.contentSlot
     ],
     TreeItem: [
-      { name: 'item', description: 'Each tab panel has an associated vwc-tab element, that when activated, displays the tab panel.' }
+      { name: 'item', description: 'Item content' }
     ],
     TreeView: [
       this.contentSlot
