@@ -1,4 +1,5 @@
 import { ClassField, CssCustomProperty, CssPart } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { styleDirectiveName } from '../../consts.ts'
 import {
   AbstractClassDeclarationDecorator,
   ICssPartsDecorator,
@@ -39,6 +40,16 @@ export class StylePropertyDecorator extends AbstractClassDeclarationDecorator im
     return cssProperties
   }
 
+  get propertyDescription(): string {
+    return `Inline styles object includes standard CSSProperties plus custom css variables suitable for this Vivid element${this.cssParts.length > 0
+      ? `\n\nAlso there are following css Parts(https://developer.mozilla.org/en-US/docs/Web/CSS/::part) supported:\n${this.cssParts.map(
+        ({ name, description }) => `- \`${name}\` - ${[description,
+          `usage: \`<${this.vueComponentName} v-${styleDirectiveName}.${name}="{ 'background-color': 'red' }" />\``].join(', ')}`
+      )}`
+      : ''
+      }`
+  }
+
   decorateProperties = (properties: ClassField[]) => properties.map(
     (prop: ClassField) => {
       if (prop.type &&
@@ -46,8 +57,8 @@ export class StylePropertyDecorator extends AbstractClassDeclarationDecorator im
           (prop.name === 'style') && this.isCustomPropertyApplicable
         )
       ) {
-        prop.type.text = `CSSProperties & {\n${this.cssProperties.map(({ name, description, syntax }) => `    /**\n    * ${description}\n    */\n    '${name}': ${this.tsTypeFromCssType(syntax)}`).join('\n')}\n  }`
-        prop.description = `Inline styles object includes standard CSSProperties plus custom css variables suitable for this Vivid element`
+        prop.type.text = `CSSProperties & {\n${this.cssProperties.map(({ name, description, syntax }) => `    /**\n    * ${description}\n    */\n    '${name}'?: ${this.tsTypeFromCssType(syntax)}`).join('\n')}\n  }`
+        prop.description = this.propertyDescription
       }
       return prop
     }

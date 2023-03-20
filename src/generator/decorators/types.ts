@@ -1,5 +1,5 @@
 import { ClassLike, Event, ClassField, Slot, CssCustomProperty, CssPart, ClassMethod, Type } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
-import { getClassName, getTagName } from '../custom.elements.ts'
+import { getClassName, getComponentName, getTagName } from '../custom.elements.ts'
 
 export type AsyncClassMethod = ClassMethod & {
   async?: boolean
@@ -95,7 +95,7 @@ export abstract class AbstractClassDeclarationDecorator implements IAbstractClas
   protected classLike: ClassLike
   protected componentDefinitions: string[];
 
-  constructor (classLike: ClassLike, componentDefinitions: string[]) {
+  constructor(classLike: ClassLike, componentDefinitions: string[]) {
     this.classLike = classLike
     this.componentDefinitions = componentDefinitions
   }
@@ -106,5 +106,9 @@ export abstract class AbstractClassDeclarationDecorator implements IAbstractClas
 
   get tagName(): string {
     return getTagName(this.classLike!)
+  }
+
+  get vueComponentName(): string {
+    return getComponentName(this.classLike!)
   }
 }

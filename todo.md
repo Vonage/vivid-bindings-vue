@@ -1,3 +1,1 @@
-# expose cssParts throu the generated vue component
-
-# Find out why not all elements are listed in custom-elements registry, TreeItem, TreeView, etc.
+# backfill properties from the all Vivid Elements/Classes which are extended/inherited from the Fast.design elements

@@ -1,8 +1,10 @@
+import { StyleDescriptor } from './types'
+
 /**
  * Taken from https://github.com/Vonage/spezia-webfont-kit repo
  * https://github.com/Vonage/spezia-webfont-kit/blob/main/src/spezia-font-override.tokens.css
  */
-export default {
+export default <StyleDescriptor>{
   id: 'font.spezia', css: `
 @font-face {
 	font-family: SpeziaCompleteVariableUpright;

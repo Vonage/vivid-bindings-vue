@@ -1,7 +1,7 @@
 import { ensureDir } from 'https://deno.land/std@0.137.0/fs/ensure_dir.ts'
 
 import vpkg from 'https://esm.sh/@vonage/vivid@latest/package.json' assert { type: "json" }
-import { markdownFolder, npmPackageName, tagPrefix, versionFile } from '../consts.ts'
+import { markdownFolder, npmPackageName, styleDirectiveName, tagPrefix, versionFile } from '../consts.ts'
 import { enumerateVividElements } from './custom.elements.ts'
 import { CssPropertiesDecorator } from './decorators/css.properties.decorator.ts'
 import { EventsDecorator } from './decorators/events.decorator.ts'
@@ -39,9 +39,11 @@ export const generate = async () => {
   )
 
   await ensureDir(packageGeneratedSrcDir)
+  // pass Deno TS consts to the Web TS package
   await Deno.writeFile(
     `${packageGeneratedSrcDir}/consts.ts`,
-    new TextEncoder().encode(`export const tagPrefix = '${tagPrefix}'\n`)
+    new TextEncoder().encode(`export const tagPrefix = '${tagPrefix}'
+export const styleDirectiveName = '${styleDirectiveName}'\n`)
   )
 
   const { typeDeclarations } = await enumerateVividElements(

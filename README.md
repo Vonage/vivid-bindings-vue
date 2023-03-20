@@ -19,13 +19,14 @@ Vivid can be initialized as easy as few lines of code
 ```ts
 import { createApp } from 'vue'
 import App from './App.vue'
-import { initVivid } from '@vonage/vivid-bindings-vue'
+import { vivid } from '@vonage/vivid-bindings-vue'
 
 const app = createApp(App)
-
+app.use(vivid, {
+  font: 'oss',
+  theme: 'dark'
+})
 app.mount('#app')
-
-initVivid({ app })
 ```
 
 `vite.config.ts`
