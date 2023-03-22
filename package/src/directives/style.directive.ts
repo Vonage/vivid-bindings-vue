@@ -1,7 +1,8 @@
 import { Directive, CSSProperties } from 'vue'
 import { v1 } from 'uuid'
+import { vividDataAttributePrefix } from '../types'
 
-const dataVividId = 'data-vivid-id'
+const dataVividId = `${vividDataAttributePrefix}-id`
 
 const styleToCssText = (stylesObject: CSSProperties) =>
   Object.entries(stylesObject).map(([key, value]) => `  ${key}: ${value}`).join('\n')

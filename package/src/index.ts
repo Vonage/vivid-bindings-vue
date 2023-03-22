@@ -55,21 +55,21 @@ const appendStyleElement = (document: Document) => (styleDescriptor: StyleDescri
 export const isCustomElement = (tag: string) => tag.startsWith(`${tagPrefix}-`)
 
 /**
- * Inits Vivid integration with VueJs3 App
+ * Inits Vivid3 integration with VueJs3 App
  * @param options Provides initial Vivid config, font, theme, etc.
  * @example
 import { createApp } from 'vue'
 import App from './App.vue'
-import { vivid } from '@vonage/vivid-bindings-vue'
+import { vivid3 } from '@vonage/vivid-bindings-vue'
 
 const app = createApp(App)
-app.use(vivid, {
+app.use(vivid3, {
   font: 'oss',
   theme: 'dark'
 })
 app.mount('#app')
  */
-export const vivid = <Plugin>{
+export const vivid3 = <Plugin>{
   install(app: App<any>, options: VividConfiguration) {
     app.directive(styleDirectiveName, styleDirective)
     const handle = setTimeout(() => {
