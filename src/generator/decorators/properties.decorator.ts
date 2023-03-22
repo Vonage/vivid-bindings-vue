@@ -54,6 +54,9 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
   /**
    * TODO: To address issue to https://custom-elements-manifest.open-wc.org/
    * issue: CEM Analyzer is not catching inherited properties & attributes
+   *
+   * Mitigation path: Vivid elements has to be documented properly via JsDoc custom tags
+   * https://github.com/open-wc/custom-elements-manifest/blob/8f9646c6a84dce20b1b018a61a8d024bae07d8cd/packages/analyzer/src/features/analyse-phase/class-jsdoc.js#L19
    */
   affixIconWithTrailingProperties: ClassField[] = [
     this.iconProperty,
@@ -91,6 +94,9 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
     ],
 
     TextField: [
+      this.iconProperty
+    ],
+    Combobox: [
       this.iconProperty
     ],
     Banner: [

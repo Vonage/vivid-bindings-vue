@@ -1,12 +1,12 @@
 import { App, Plugin } from 'vue'
-import { StyleDescriptor, VividConfiguration } from './types'
+import { StyleDescriptor, VividConfiguration, vividDataAttributePrefix } from './types'
 import { tagPrefix } from './generated/consts'
 import coreStyles from './generated/style.core.all'
 import darkThemeStyles from './generated/style.theme.dark'
 import lightThemeStyles from './generated/style.theme.light'
 import fontSpeziaStyles from './style.font.spezia'
 import { styleDirective } from './directives'
-import { styleDirectiveName } from './generated/consts'
+import { styleDirectiveName, vividVersion } from './generated/consts'
 
 export * from './generated/consts'
 export * from './generated/types'
@@ -24,7 +24,7 @@ const appendLinkElement = (document: Document) => (rel: string, href: string, cr
 const appendStyleElement = (document: Document) => (styleDescriptor: StyleDescriptor) => {
   const styleElement = document.createElement('style')
   styleElement.setAttribute('type', 'text/css')
-  styleElement.setAttribute('data-vivid-id', styleDescriptor.id)
+  styleElement.setAttribute(`${vividDataAttributePrefix}-id`, styleDescriptor.id)
   styleElement.innerHTML = styleDescriptor.css
   document.head.append(styleElement)
 }
@@ -78,7 +78,7 @@ export const vivid = <Plugin>{
         console.log('initVivid', options)
         const theme = options.theme ?? 'light'
         const font = options.font ?? 'oss'
-        const container = app._container
+        const container: HTMLElement = app._container
         const document: Document = container?.ownerDocument ?? window.document
         appendStyleElement(document)(coreStyles)
         appendStyleElement(document)(theme === 'light' ? lightThemeStyles : darkThemeStyles)
@@ -90,6 +90,7 @@ export const vivid = <Plugin>{
           appendLinkElement(document)('stylesheet', 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap')
         }
         container?.classList.add('vvd-root')
+        container?.setAttribute(`${vividDataAttributePrefix}-version`, vividVersion)
       }
     }, 0)
   }

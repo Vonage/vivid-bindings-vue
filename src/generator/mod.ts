@@ -42,8 +42,13 @@ export const generate = async () => {
   // pass Deno TS consts to the Web TS package
   await Deno.writeFile(
     `${packageGeneratedSrcDir}/consts.ts`,
-    new TextEncoder().encode(`export const tagPrefix = '${tagPrefix}'
-export const styleDirectiveName = '${styleDirectiveName}'\n`)
+    new TextEncoder().encode(
+      Object.entries({
+        tagPrefix,
+        styleDirectiveName,
+        vividVersion: vpkg.version
+      }).map(([key, value]) => `export const ${key} = '${value}'`).join('\n')
+    )
   )
 
   const { typeDeclarations } = await enumerateVividElements(

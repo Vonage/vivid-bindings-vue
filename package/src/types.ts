@@ -1,3 +1,5 @@
+export const vividDataAttributePrefix = 'data-vivid'
+
 export type StyleDescriptor = {
   id: string
   css: string

@@ -25,7 +25,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
     'Button', 'Dialog', 'Badge', 'TextAnchor',
     'Avatar', 'Card', 'AccordionItem',
     'Option', 'Note', 'TextField',
-    'NavDisclosure',
+    'NavDisclosure', 'Combobox',
     'NavItem', 'MenuItem']
 
   get isIconClass() {

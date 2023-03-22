@@ -4,11 +4,11 @@ Typescript bindings for [Vivid 3](http://vivid.deno.dev) web components to be us
 
 What's in the box(i.e. batteries included):
 
-* Convergent [Vivid](https://github.com/Vonage/vivid-3) design system initialization routine
-* 100% Vivid components covered with bindings
-* Almost 100% automated process for NPM package generation & release
-* Enhanced DevEx (VS Code intellisense) + Fully sound Typescript type checking for Vivid web components props/events contracts
-* Abstraction layer for easier migration between Vivid major versions
+* Few lines of code convergent initialization routine for [Vivid](https://github.com/Vonage/vivid-3) design system
+* **100%** Vivid components covered with bindings
+* **~100%** automated process for NPM package generation & release. `@vonage/vivid` package is the release driver/trigger
+* Enhanced DevEx (VS Code intellisense) + Fully sound Typescript type checking for Vivid web components props/events/slots/cssProps/cssParts/etc. contracts
+* Abstraction layer for easier migration to future **major** versions of Vivid
 
 
 ## How to integrate with VueJs App
@@ -82,7 +82,7 @@ function handleClick(e:PointerEvent) {}
 
 ## Releases
 
-This package has a `pipeline` workflow which is checking for a new Vivid version on a weekly basis and if it detects that new version is out The new bindings are generated and published automatically, reflecting the same package version `@vonage/vivid` has.
+This package has a `pipeline` workflow which is checking for a new Vivid version on a weekly basis and if it detects that new version is out The new bindings are generated and published automatically, **reflecting** the same package version `@vonage/vivid` has. So the release driver is `@vonage/vivid` package itself.
 
 ## Repository structure
 
