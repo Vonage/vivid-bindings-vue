@@ -1,3 +1,4 @@
+export const vividRootClassName = 'vvd-root'
 export const vividDataAttributePrefix = 'data-vivid'
 
 export type StyleDescriptor = {
@@ -9,4 +10,5 @@ export type VividFont = 'oss' | 'proprietary'
 export type VividConfiguration = {
   theme?: VividTheme
   font?: VividFont
+  verbose? :boolean
 }

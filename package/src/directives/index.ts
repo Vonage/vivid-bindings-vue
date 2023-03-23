@@ -1,3 +1,1 @@
-import { styleDirective } from './style.directive'
-
-export { styleDirective }
+export * from './style.directive'

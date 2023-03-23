@@ -1,24 +1,17 @@
 import { Directive, CSSProperties } from 'vue'
 import { v1 } from 'uuid'
 import { vividDataAttributePrefix } from '../types'
+import { appendStyle } from '../dom.utils'
 
 const dataVividId = `${vividDataAttributePrefix}-id`
 
 const styleToCssText = (stylesObject: CSSProperties) =>
   Object.entries(stylesObject).map(([key, value]) => `  ${key}: ${value}`).join('\n')
 
-const appendStyleElement = (document: Document) => (id: string, selector: string, stylesObject: CSSProperties) => {
-  const styleElement = document.createElement('style')
-  styleElement.setAttribute('type', 'text/css')
-  styleElement.setAttribute(dataVividId, id)
-  styleElement.innerHTML = `${selector} {\n${styleToCssText(stylesObject)}\n}`
-  document.head.append(styleElement)
-}
-
 /**
  * Directive facilitates the configuration of inline styles for particular cssPart of a Vivid element
- * w/o having to specify vivid custom element tagName in the css rules, since tag name contains a dynamic prefix
- * it's not reliable to be statically referenced from css
+ * w/o having to specify vivid custom element tagName in the css rules, since tag name contains a **dynamic** prefix
+ * it's not reliable to be **statically** referenced from css
  *
  * @example
  *   <VwcHeader v-style.base="{ 'background-color': 'red' }" />
@@ -32,10 +25,11 @@ export const styleDirective: Directive<HTMLElement, CSSProperties> = {
     el.setAttribute(identity, '')
     Object.entries(modifiers).forEach(
       ([key, _]) => {
-        appendStyleElement(document)(
-          `${vividElementInstanceId}`,
-          `${tagName}[${identity}]::part(${key})`,
-          value
+        appendStyle(
+          {
+            id: `${vividElementInstanceId}`,
+            css: `${`${tagName}[${identity}]::part(${key})`} {\n${styleToCssText(value)}\n}`
+          }
         )
       }
     )
