@@ -4,8 +4,8 @@ import coreStyles from './generated/style.core.all'
 import darkThemeStyles from './generated/style.theme.dark'
 import lightThemeStyles from './generated/style.theme.light'
 import fontSpeziaStyles from './style.font.spezia'
-import { styleDirective } from './directives'
-import { styleDirectiveName, vividVersion } from './generated/consts'
+import { directives } from './directives'
+import { vividVersion } from './generated/consts'
 import { appendLink, appendStyle, initDomUtils } from './dom.utils'
 
 /**
@@ -26,13 +26,13 @@ app.mount('#app')
 export const vivid3 = <Plugin>{
   install(app: App<any>, options: VividConfiguration) {
     initDomUtils(window.document)
-    app.directive(styleDirectiveName, styleDirective)
+    directives.forEach(({ name, directive }) => app.directive(name, directive))
     const handle = setTimeout(() => {
       const appContainer: HTMLElement = app._container
       if (!appContainer) {
         return
       }
-      initDomUtils(appContainer?.ownerDocument ?? window.document)
+      initDomUtils(appContainer.ownerDocument ?? window.document)
       clearTimeout(handle)
       if (options.verbose) {
         console.log('initVivid', options)
@@ -48,8 +48,8 @@ export const vivid3 = <Plugin>{
         appendLink('preconnect', 'https://fonts.gstatic.com', true)
         appendLink('stylesheet', 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Roboto+Mono:wght@400;500&display=swap')
       }
-      appContainer?.classList.add(vividRootClassName)
-      appContainer?.setAttribute(`${vividDataAttributePrefix}-version`, vividVersion)
+      appContainer.classList.add(vividRootClassName)
+      appContainer.setAttribute(`${vividDataAttributePrefix}-version`, vividVersion)
     }, 0)
   }
 }

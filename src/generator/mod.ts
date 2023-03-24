@@ -1,7 +1,7 @@
 import { ensureDir } from 'https://deno.land/std@0.137.0/fs/ensure_dir.ts'
 
 import vpkg from 'https://esm.sh/@vonage/vivid@latest/package.json' assert { type: "json" }
-import { markdownFolder, npmPackageName, styleDirectiveName, tagPrefix, versionFile } from '../consts.ts'
+import { markdownFolder, npmPackageName, styleDirectiveName, rootDirectiveName, tagPrefix, versionFile } from '../consts.ts'
 import { enumerateVividElements } from './custom.elements.ts'
 import { CssPropertiesDecorator } from './decorators/css.properties.decorator.ts'
 import { EventsDecorator } from './decorators/events.decorator.ts'
@@ -46,6 +46,7 @@ export const generate = async () => {
       Object.entries({
         tagPrefix,
         styleDirectiveName,
+        rootDirectiveName,
         vividVersion: vpkg.version
       }).map(([key, value]) => `export const ${key} = '${value}'`).join('\n')
     )

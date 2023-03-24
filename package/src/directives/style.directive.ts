@@ -2,6 +2,8 @@ import { Directive, CSSProperties } from 'vue'
 import { v1 } from 'uuid'
 import { vividDataAttributePrefix } from '../types'
 import { appendStyle } from '../dom.utils'
+import { DirectiveDescriptor } from './types'
+import { styleDirectiveName } from './../generated/consts'
 
 const dataVividId = `${vividDataAttributePrefix}-id`
 
@@ -17,7 +19,7 @@ const styleToCssText = (stylesObject: CSSProperties) =>
  *   <VwcHeader v-style.base="{ 'background-color': 'red' }" />
  *   <!-- Where, `base` is the name of the cssPart supported by the `VwcHeader` vivid element -->
  */
-export const styleDirective: Directive<HTMLElement, CSSProperties> = {
+const styleDirective: Directive<HTMLElement, CSSProperties> = {
   beforeMount(el, { modifiers, value }) {
     const tagName = el.tagName.toLowerCase()
     const vividElementInstanceId = `${v1().substring(0, 8)}`
@@ -34,4 +36,9 @@ export const styleDirective: Directive<HTMLElement, CSSProperties> = {
       }
     )
   }
+}
+
+export const styleDirectiveDescriptor = <DirectiveDescriptor>{
+  directive: styleDirective,
+  name: styleDirectiveName
 }
