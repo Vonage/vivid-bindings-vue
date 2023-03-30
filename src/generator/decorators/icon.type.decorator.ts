@@ -24,7 +24,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
   iconCapableClasses = ['Tab', 'Fab', 'Banner',
     'Button', 'Dialog', 'Badge', 'TextAnchor',
     'Avatar', 'Card', 'AccordionItem',
-    'Option', 'Note', 'TextField',
+    'Option', 'Note', 'TextField', 'Select',
     'NavDisclosure', 'Combobox',
     'NavItem', 'MenuItem']
 
