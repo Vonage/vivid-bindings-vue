@@ -92,6 +92,9 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
     TextAnchor: [
       ...this.affixIconWithTrailingProperties
     ],
+    Select: [
+      ...this.affixIconWithTrailingProperties
+    ],
 
     TextField: [
       this.iconProperty

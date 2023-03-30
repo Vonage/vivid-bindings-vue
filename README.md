@@ -94,6 +94,7 @@ The entire repository is a pure Typescript code, divided onto two main parts
 
 * Vivid web components since version 3.0 are shipped with the custom elements meta data alongside the code itself.
   Which allows to employ code generation practice to build near **100% automated** typescript type safe bindings for VueJs components
+* Maintenance cost should be linear, it's always **one** component to be rendered, no matter how **many** elements there are actually in Vivid design system
 * Adds an abstraction layer to mitigate the custom web components namespacing conflicts issue, to enable usage of several major versions of Vivid components in the single application more info [here](https://vivid.deno.dev/#advanced-usage), and how Salesforce Lightning web components are solving that issue [here](https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.create_components_namespace)
 
 
