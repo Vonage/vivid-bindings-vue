@@ -98,6 +98,6 @@ The entire repository is a pure Typescript code, divided onto two main parts
 * Adds an abstraction layer to mitigate the custom web components namespacing conflicts issue, to enable usage of several major versions of Vivid components in the single application more info [here](https://vivid.deno.dev/#advanced-usage), and how Salesforce Lightning web components are solving that issue [here](https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.create_components_namespace)
 
 
-## Manually managed opinionated bindings for VueJs 2.x
+## Official bindings for Vue 2.x/3.x
 https://github.com/Vonage/vivid-vue
 
