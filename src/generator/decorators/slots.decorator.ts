@@ -8,7 +8,7 @@ import {
  * Adds missing slots declarations, due to incomplete Vivid elements meta data
  */
 export class SlotsDecorator extends AbstractClassDeclarationDecorator implements
-ISlotsDecorator {
+  ISlotsDecorator {
 
   contentSlot = <Slot>{
     name: '',
@@ -96,8 +96,9 @@ ISlotsDecorator {
   }
 
   decorateSlots = (slots: Slot[]) =>
-    [
-      ...slots,
-      ...(this.extraSlotsMap[this.className] ?? [])
-    ]
+    this.className === 'Icon' ? [] :
+      [
+        ...slots,
+        ...(this.extraSlotsMap[this.className] ?? [])
+      ]
 }
