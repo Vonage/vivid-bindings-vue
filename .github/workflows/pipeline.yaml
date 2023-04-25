@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   repository_dispatch:
   schedule:
-    # Runs "At 00:00 on Sunday" (see https://crontab.guru)
-    - cron: '0 0 * * 0'
+    # Runs "At 00:00 on every day-of-week from Sunday through Saturday." (see https://crontab.guru)
+    - cron: '0 0 * * 0-6'
 
 jobs:
   generate:
