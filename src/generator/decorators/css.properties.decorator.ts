@@ -72,6 +72,24 @@ export class CssPropertiesDecorator extends AbstractClassDeclarationDecorator im
         description: 'Control the grid-template-columns of the layout by setting --layout-grid-template-columns.',
         syntax: 'repeat(auto-sizing, minmax(column-basis, 1fr))',
         default: 'auto'
+      },
+      {
+        name: '--layout-grid-template-rows',
+        description: 'Control the grid-template-rows of the layout by setting `--layout-grid-template-rows`.',
+        syntax: '<string>',
+        default: 'undefined'
+      },
+      {
+        name: '--layout-row-gap',
+        description: 'Control the grid row-gap by setting `--layout-row-gap`.',
+        syntax: '<string>',
+        default: 'undefined'
+      },
+      {
+        name: '--layout-column-gap',
+        description: 'Control the grid column-gap by setting `--layout-column-gap`.',
+        syntax: '<string>',
+        default: 'undefined'
       }
     ],
     Header: [
