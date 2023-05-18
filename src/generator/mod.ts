@@ -65,7 +65,7 @@ export const generate = async () => {
       ImportsDecorator
     ],
     async ({ vueComponentName, tagName, properties, methods, events, slots, imports,
-      classDeclaration, vividElementDocUrl }) => {
+      classDeclaration, vividElementDocUrl, vueModel }) => {
       console.log(vueComponentName)
       const componentPackageDir = `${v3Dir}/${vueComponentName}`
       await ensureDir(componentPackageDir)
@@ -87,7 +87,7 @@ export const generate = async () => {
       await Deno.writeFile(
         `${componentPackageDir}/${vueComponentName}.vue`,
         new TextEncoder().encode(await renderVividVueComponent(`${templatesFolder}/vue.component.template`, {
-          properties, methods, events, slots, imports, tagName, tagPrefix, classDeclaration, vividElementDocUrl
+          properties, methods, events, slots, imports, tagName, tagPrefix, classDeclaration, vividElementDocUrl, vueModel
         }))
       )
     }

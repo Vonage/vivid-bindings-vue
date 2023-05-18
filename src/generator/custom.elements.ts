@@ -37,6 +37,57 @@ export const getTagName = (classLike: ClassLike) => `${tagPrefix}-${camel2kebab(
 export const getVividElementDocUrl = (classLike: ClassLike) => `https://vivid.deno.dev/components/${camel2kebab(getClassName(classLike))}`
 export const getComponentName = (classLike: ClassLike) => `Vwc${getClassName(classLike)}`
 export const getElementRegistrationFunctionName = (classLike: ClassLike) => `register${getClassName(classLike)}`
+export const getVividElementVueModel = (classLike: ClassLike) => {
+  const vueModelMap: Record<string, VueModel> = {
+    Checkbox: {
+      attributeName: 'current-checked',
+      eventName: 'change',
+      valueMapping: '($event.target as HTMLInputElement).checked',
+    },
+    Combobox: {
+      attributeName: 'current-value',
+      eventName: 'change',
+      valueMapping: '($event.target as HTMLInputElement).value',
+    },
+    MenuItem: {
+      attributeName: 'checked',
+      eventName: 'change',
+      valueMapping: '($event.target as HTMLInputElement).checked',
+    },
+    NumberField: {
+      attributeName: 'current-value',
+      eventName: 'input',
+      valueMapping: '($event.target as HTMLInputElement).value',
+    },
+    RadioGroup: {
+      attributeName: 'value',
+      eventName: 'change',
+      valueMapping: '($event.target as HTMLInputElement).value',
+    },
+    Select: {
+      attributeName: 'current-value',
+      eventName: 'input',
+      valueMapping: '($event.target as HTMLInputElement).value',
+    },
+    Slider: {
+      attributeName: 'current-value',
+      eventName: 'change',
+      valueMapping: '($event.target as HTMLInputElement).value',
+    },
+    TextArea: {
+      attributeName: 'current-value',
+      eventName: 'input',
+      valueMapping: '($event.target as HTMLInputElement).value',
+    },
+    TextField: {
+      attributeName: 'current-value',
+      eventName: 'input',
+      valueMapping: '($event.target as HTMLInputElement).value',
+    }
+  }
+
+  return vueModelMap[getClassName(classLike)]
+}
 
 const getComponentsDefinitions = async () => {
   const libFolderUrl = 'https://unpkg.com/@vonage/vivid@latest/lib'
@@ -79,6 +130,12 @@ const getValidVividClassDeclarations = async () => {
   }
 }
 
+export interface VueModel {
+  attributeName: string
+  eventName: string
+  valueMapping: string
+}
+
 export interface IVividElementsContext {
   /**
    * Custom element tag prefix to be used for Vivid tag elements
@@ -89,6 +146,7 @@ export interface IVividElementsContext {
 export interface IVividElementVisitorContext {
   vueComponentName: string
   vividElementDocUrl: string
+  vueModel: VueModel
   tagName: string
   properties: ClassField[]
   methods: ClassMethod[]
@@ -171,6 +229,7 @@ export const enumerateVividElements = async (
       vueComponentName: getComponentName(classDeclaration),
       tagName: getTagName(classDeclaration),
       vividElementDocUrl: getVividElementDocUrl(classDeclaration),
+      vueModel: getVividElementVueModel(classDeclaration),
       properties,
       methods,
       cssProperties,

@@ -1,5 +1,5 @@
 import { ClassMethod, ClassField, Event } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
-import { getElementRegistrationFunctionName, IVividElementsContext, IVividElementVisitorContext } from './custom.elements.ts'
+import { getElementRegistrationFunctionName, IVividElementsContext, IVividElementVisitorContext, VueModel } from './custom.elements.ts'
 import { AsyncClassMethod, InlineClassMethod } from './decorators/types.ts'
 import { fillPlaceholders } from './utils.ts'
 
@@ -26,20 +26,32 @@ const renderMethods = (methods: ClassMethod[]): string =>
       .join(',\n')}\n})`
   ) : ''
 
-const renderTagProps = (methods: ClassMethod[], properties: ClassField[], events: Event[]) => {
+const renderTagProps = (methods: ClassMethod[], properties: ClassField[], events: Event[], vueModel?: VueModel) => {
   const items = [
     ...(methods.length > 0 ? ['    ref="element"'] : []), // to invoke the methods we need a ref to an element
     ...properties.map((x) => `    :${x.name}="${x.name}"`),
-    ...events.map((x) => `    @${x.name}="$emit('${x.name}', $event)"`)
+    ...events.filter((x) => (vueModel && vueModel.eventName !== x.name) || !vueModel).map((x) => `    @${x.name}="$emit('${x.name}', $event)"`),
+    ...(vueModel ? [
+      `    :${vueModel.attributeName}="$props.modelValue"`,
+      `    @${vueModel.eventName}="$emit('update:modelValue', ${vueModel.valueMapping}) $emit('${vueModel.eventName}', $event)"`
+    ] : [])
   ]
   return items.length > 0 ? items.join('\n') : ''
 }
 
 const renderProps = (
-  properties: ClassField[]
+  properties: ClassField[],
+  vueModel?: VueModel
 ): string =>
   properties.length > 0
-    ? `defineProps<{\n${properties
+    ? `defineProps<{\n${properties.concat(vueModel ? [{
+      name: 'modelValue',
+      description: 'v-model property',
+      kind: 'field',
+      type: {
+        text: 'any'
+      }
+    }] : [])
       .map(
         (x) =>
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
@@ -49,10 +61,18 @@ const renderProps = (
     : ''
 
 const renderEvents = (
-  events: Event[]
+  events: Event[],
+  vueModel?: VueModel
 ): string =>
-  events.length > 0
-    ? `\ndefineEmits<{\n${events
+  (events.length > 0 || vueModel)
+    ? `\ndefineEmits<{\n${events.concat(vueModel ? [
+      {
+        name: 'update:modelValue',
+        type: {
+          text: 'any'
+        }
+      }
+    ] : [])
       .map(
         (x) =>
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
@@ -68,7 +88,7 @@ const renderEvents = (
  * @returns code content for .vue SFC file https://vuejs.org/api/sfc-spec.html#sfc-syntax-specification
  */
 export const renderVividVueComponent = async (template: string,
-  { classDeclaration, tagPrefix, tagName, properties, methods, events, slots, imports, vividElementDocUrl }:
+  { classDeclaration, tagPrefix, tagName, properties, methods, events, slots, imports, vividElementDocUrl, vueModel }:
     Partial<IVividElementVisitorContext> & IVividElementsContext
 ) => await fillPlaceholders(template)({
   componentRegisterMethod: getElementRegistrationFunctionName(classDeclaration!),
@@ -78,7 +98,7 @@ export const renderVividVueComponent = async (template: string,
   slot: slots!.length > 0 ? `<slot />` : '',
   tagPrefix,
   methods: renderMethods(methods!),
-  events: renderEvents(events!),
-  props: renderProps(properties!),
-  tagProps: renderTagProps(methods!, properties!, events!),
+  events: renderEvents(events!, vueModel),
+  props: renderProps(properties!, vueModel),
+  tagProps: renderTagProps(methods!, properties!, events!, vueModel),
 })
