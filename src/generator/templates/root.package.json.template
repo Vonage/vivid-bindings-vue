@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@vonage/vivid": "<%= vividPackageVersion %>",
-    "vue": "3.2.47",
+    "vue": "3.3.4",
     "uuid": "9.0.0"
   },
   "devDependencies": {
