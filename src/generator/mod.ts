@@ -96,7 +96,7 @@ export const generate = async () => {
   await Deno.writeFile(
     `${packageGeneratedSrcDir}/types.ts`,
     new TextEncoder().encode(Object.entries(typeDeclarations)
-      .map(([name, { declaration, description }]) => `/**\n*  ${description}\n*/\nexport type ${name} = ${declaration.text}`).join('\n'))
+      .map(([name, { specifier, assignment, declaration, description }]) => `/**\n*  ${description}\n*/\nexport ${[specifier, name, assignment].filter(Boolean).join(' ')} ${declaration.text}`).join('\n'))
   )
 
   for await (const stylesFile of [

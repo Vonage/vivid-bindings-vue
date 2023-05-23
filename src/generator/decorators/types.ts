@@ -10,6 +10,8 @@ export type InlineClassMethod = ClassMethod & {
 }
 
 export type TypeDeclaration = {
+  specifier: string
+  assignment: string
   name: string
   description: string
   declaration: Type
