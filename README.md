@@ -82,7 +82,7 @@ function handleClick(e:PointerEvent) {}
 
 ## Releases
 
-This package has a `pipeline` workflow which is checking for a new Vivid version on a weekly basis and if it detects that new version is out The new bindings are generated and published automatically, **reflecting** the same package version `@vonage/vivid` has. So the release driver is `@vonage/vivid` package itself.
+This package has a `pipeline` workflow which is checking for a new Vivid version on a **dayly** basis and if it detects that new version is out The new bindings are generated and published automatically, **reflecting** the same package version `@vonage/vivid` has. So the release driver is `@vonage/vivid` package itself.
 
 ## Repository structure
 
