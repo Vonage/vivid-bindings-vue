@@ -33,7 +33,7 @@ const renderTagProps = (methods: ClassMethod[], properties: ClassField[], events
     ...events.filter((x) => (vueModel && vueModel.eventName !== x.name) || !vueModel).map((x) => `    @${x.name}="$emit('${x.name}', $event)"`),
     ...(vueModel ? [
       `    :${vueModel.attributeName}="$props.modelValue"`,
-      `    @${vueModel.eventName}="$emit('update:modelValue', ${vueModel.valueMapping}) $emit('${vueModel.eventName}', $event)"`
+      `    @${vueModel.eventName}="$emit('update:modelValue', ${vueModel.valueMapping}); $emit('${vueModel.eventName}', $event)"`
     ] : [])
   ]
   return items.length > 0 ? items.join('\n') : ''

@@ -81,7 +81,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
         specifier: 'type',
         assignment: '=',
         description: this.typeDescription,
-        declaration: { text: `keyof typeof ${IconTypeDecorator.enumName}` }
+        declaration: { text: `typeof ${IconTypeDecorator.enumName}[keyof typeof ${IconTypeDecorator.enumName}]` }
       },
       {
         name: IconTypeDecorator.enumName,
