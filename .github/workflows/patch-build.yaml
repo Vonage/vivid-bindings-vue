@@ -1,0 +1,42 @@
+name: 'patch'
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+
+jobs:
+  generate:
+    name: Run bindings generation
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@main
+      - name: Checkout wiki code
+        uses: actions/checkout@main
+        with:
+          repository: ${{github.repository}}.wiki
+          path: markdown/
+      - uses: denoland/setup-deno@main
+        with:
+          deno-version: vx.x.x
+      - uses: actions/setup-node@main
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          node-version: 18
+      - name: Generate bindings patch
+        run: |
+          deno task generate
+          cp -f ./README.md ./package/README.md
+          cd ./package
+          VERSION=$(node -p -e "require('package.json').version")
+          VERSION=$(node -p -e "'${VERSION}'.split('.').map((x, index) => index === 2 ? x + '+' + '${{ github.run_number }}' : x).join('.')")
+          x=$(node -p -e "const x = require('package.json'); x.version = '${VERSION}';
+          require('fs').writeFileSync('package.json', JSON.stringify(x, null, '  '))")
+          npm install
+          npm run build
+          echo registry=https://registry.npmjs.org/ > .npmrc
+          echo //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN} >> .npmrc
+          echo always-auth=true >> .npmrc
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
