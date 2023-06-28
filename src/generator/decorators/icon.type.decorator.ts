@@ -7,7 +7,7 @@ import {
   ITypeDeclarationsProviderDecorator,
   TypeDeclaration
 } from "./types.ts"
-import { kebab2camel } from '../utils.ts'
+import { kebab2camel, toValidIdentifier } from '../utils.ts'
 
 interface IconDescriptor {
   id: string
@@ -88,7 +88,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
         specifier: 'enum',
         assignment: '',
         description: this.typeDescription,
-        declaration: { text: `{\n${this.iconDescriptors.map(({ id }) => `  ${kebab2camel(id)} = '${id}'`).join(',\n')}\n}` }
+        declaration: { text: `{\n${this.iconDescriptors.map(({ id }) => `  ${toValidIdentifier(kebab2camel(id))} = '${id}'`).join(',\n')}\n}` }
       }
     ]
   }

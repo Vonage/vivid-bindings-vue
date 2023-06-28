@@ -1,6 +1,7 @@
 const deCapitalize = (input: string) => input.replace(/(^|\s)[A-Z]/g, s => s.toLowerCase())
 export const camel2kebab = (input: string) => deCapitalize(input).replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, '-').toLowerCase()
 export const kebab2camel = (input: string) => input.replace(/-([A-Za-z0-9])/g, (_, p1) => p1.toUpperCase())
+export const toValidIdentifier = (input: string) => input.replace(/^\d+/, '')
 export const getNthGroupMatch = (
   regExp: RegExp,
   content: string,
