@@ -76,7 +76,7 @@ const renderEvents = (
       .map(
         (x) =>
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
-          }(event: '${x.name}', payload: ${x.type.text}): void`
+          }(event: '${x.name}', payload: ${x.type?.text ?? 'Event'}): void`
       )
       .join('\n')}\n}>()`
     : ''
