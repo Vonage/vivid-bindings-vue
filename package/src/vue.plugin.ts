@@ -27,13 +27,13 @@ export const vivid3 = <Plugin>{
   install(app: App<any>, options: VividConfiguration) {
     initDomUtils(window.document)
     directives.forEach(({ name, directive }) => app.directive(name, directive))
-    const handle = setTimeout(() => {
+    const handle = setInterval(() => {
       const appContainer: HTMLElement = app._container
       if (!appContainer) {
         return
       }
       initDomUtils(appContainer.ownerDocument ?? window.document)
-      clearTimeout(handle)
+      clearInterval(handle)
       if (options.verbose) {
         console.log('initVivid', options)
       }
@@ -50,6 +50,6 @@ export const vivid3 = <Plugin>{
       }
       appContainer.classList.add(vividRootClassName)
       appContainer.setAttribute(`${vividDataAttributePrefix}-version`, vividVersion)
-    }, 0)
+    }, 30)
   }
 }
