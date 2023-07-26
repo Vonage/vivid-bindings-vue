@@ -23,7 +23,7 @@ import {
   isImportsProviderDecorator,
   isMethodsDecorator
 } from './decorators/types.ts'
-import { camel2kebab, getNthGroupMatch } from './utils.ts'
+import { camel2kebab } from './utils.ts'
 
 /**
  * Some Vivid custom elements classes breaks the naming convention, this map is needed to mitigate that fact
@@ -94,7 +94,7 @@ const getComponentsDefinitions = async () => {
   const vComponentsIndexResponse = await fetch(`${libFolderUrl}/components.d.ts`)
   const componentsIndex = await vComponentsIndexResponse.text()
   const componentDefinitionsUrls = componentsIndex.split('\n')
-    .map((exportStatement: string) => getNthGroupMatch(/'\.(.*)'/g, exportStatement))
+    .map((exportStatement: string) => exportStatement.match(/'\.(.*)'/)?.[1])
     .filter(x => x)
     .map(x => `${libFolderUrl}${x}.d.ts`)
 
