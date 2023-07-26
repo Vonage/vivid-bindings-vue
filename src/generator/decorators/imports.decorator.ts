@@ -16,29 +16,15 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
   IMethodsDecorator,
   IImportsProviderDecorator {
 
-  extraImports: Record<string, string[]> = {
-    AccordionItem: [
-      "import { AccordionItemSize } from '@vonage/vivid/lib/accordion-item/accordion-item'"
-    ],
-    Alert: [
-      "import { AlertPlacement } from '@vonage/vivid/lib/alert/alert'"
-    ],
-    Checkbox: [
-      "import { CheckboxConnotation } from '@vonage/vivid/lib/checkbox/checkbox'"
-    ],
-    DataGrid: [
-      "import { DataGridSelectionMode } from '@vonage/vivid/lib/data-grid/data-grid'"
-    ],
-    Pagination: [
-      "import { PaginationSize } from '@vonage/vivid/lib/pagination/pagination'",
-      "import { Button } from '@vonage/vivid/lib/button/button'"
-    ],
-    Radio: [
-      "import { RadioConnotation } from '@vonage/vivid/lib/radio/radio'"
-    ],
-    Tabs: [
-      "import { TabsConnotation } from '@vonage/vivid/lib/tabs/tabs'"
-    ]
+  extraImports: Record<string, string> = {
+    AccordionItemSize: '@vonage/vivid/lib/accordion-item/accordion-item',
+    AlertPlacement: '@vonage/vivid/lib/alert/alert',
+    CheckboxConnotation: '@vonage/vivid/lib/checkbox/checkbox',
+    DataGridSelectionMode: '@vonage/vivid/lib/data-grid/data-grid',
+    PaginationSize: '@vonage/vivid/lib/pagination/pagination',
+    Button: '@vonage/vivid/lib/button/button',
+    RadioConnotation: '@vonage/vivid/lib/radio/radio',
+    TabsConnotation: '@vonage/vivid/lib/tabs/tabs',
   }
 
   protected methods: ClassMethod[] = []
@@ -56,11 +42,15 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
     ]
   }
 
+  get vividInternallyExportedTypes(): string[] {
+    return this.referencedTypeNames.filter(x => x in this.extraImports && !this.isVividExportedType(x))
+  }
+
   get imports(): string[] {
     return [
       `import { ${this.vividExportedTypes.join(', ')} } from '@vonage/vivid'`,
       ...(this.methods.length > 0 ? [`import { ref } from 'vue'`] : []),
-      ...(this.extraImports[this.className] ?? [])
+      ...(this.vividInternallyExportedTypes.map(x => `import { ${x} } from '${this.extraImports[x]}'`))
     ]
   }
 
