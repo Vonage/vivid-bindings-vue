@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig",
+  "include": [
+    "v3/**/*.vue"
+  ],
+  "compilerOptions": {
+    "emitDeclarationOnly": true,
+    "outDir": "."
+  }
+}
