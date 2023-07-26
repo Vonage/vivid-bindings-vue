@@ -100,7 +100,7 @@ const getComponentsDefinitions = async () => {
 
   const componentDefinitions = []
   console.info(`Downloading elements definitions`)
-  for await (const componentDefinitionUrl of componentDefinitionsUrls) {
+  for (const componentDefinitionUrl of componentDefinitionsUrls) {
     const response = await fetch(componentDefinitionUrl)
     const componentDefinitionText = await response.text()
     componentDefinitions.push(componentDefinitionText)
@@ -178,7 +178,7 @@ export const enumerateVividElements = async (
     typeDeclarations: {}
   }
 
-  for await (const classDeclaration of classDeclarations) {
+  for (const classDeclaration of classDeclarations) {
     const imports = []
     let properties = classDeclaration.members as ClassField[] || []
     let methods = classDeclaration.members as ClassMethod[] || []
