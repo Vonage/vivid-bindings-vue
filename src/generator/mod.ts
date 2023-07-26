@@ -14,6 +14,7 @@ import { SlotsDecorator } from './decorators/slots.decorator.ts'
 import { StylePropertyDecorator } from './decorators/style.property.decorator.ts'
 import { renderVividVueComponent } from './render.vue.component.ts'
 import { fillPlaceholders } from './utils.ts'
+import { AnchorTypeDecorator } from './decorators/anchortype.decorator.ts'
 
 /**
  * Enumerates all valid Vivid custom elements and generates the output to the `./package` folder
@@ -59,6 +60,7 @@ export const generate = async () => {
       CssPropertiesDecorator,
       SlotsDecorator,
       PropertiesDecorator,
+      AnchorTypeDecorator,
       EventsDecorator,
       IconTypeDecorator,
       StylePropertyDecorator,
