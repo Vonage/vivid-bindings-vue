@@ -11,7 +11,7 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "build": "vite build && npx vue-tsc -p tsconfig.components.json"
+    "build": "vite build && vue-tsc -p tsconfig.components.json"
   },
   "dependencies": {
     "@vonage/vivid": "<%= vividPackageVersion %>",
