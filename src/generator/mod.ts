@@ -14,6 +14,7 @@ import { SlotsDecorator } from './decorators/slots.decorator.ts'
 import { StylePropertyDecorator } from './decorators/style.property.decorator.ts'
 import { renderVividVueComponent } from './render.vue.component.ts'
 import { fillPlaceholders } from './utils.ts'
+import { AnchorTypeDecorator } from './decorators/anchortype.decorator.ts'
 
 /**
  * Enumerates all valid Vivid custom elements and generates the output to the `./package` folder
@@ -59,6 +60,7 @@ export const generate = async () => {
       CssPropertiesDecorator,
       SlotsDecorator,
       PropertiesDecorator,
+      AnchorTypeDecorator,
       EventsDecorator,
       IconTypeDecorator,
       StylePropertyDecorator,
@@ -99,7 +101,7 @@ export const generate = async () => {
       .map(([name, { specifier, assignment, declaration, description }]) => `/**\n*  ${description}\n*/\nexport ${[specifier, name, assignment].filter(Boolean).join(' ')} ${declaration.text}`).join('\n'))
   )
 
-  for await (const stylesFile of [
+  for (const stylesFile of [
     { name: 'core.all', url: 'https://unpkg.com/@vonage/vivid@latest/styles/core/all.css' },
     { name: 'theme.light', url: 'https://unpkg.com/@vonage/vivid@latest/styles/tokens/theme-light.css' },
     { name: 'theme.dark', url: 'https://unpkg.com/@vonage/vivid@latest/styles/tokens/theme-dark.css' }

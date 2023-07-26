@@ -1,5 +1,5 @@
 import { escapeStringRegexp } from 'https://raw.githubusercontent.com/Sab94/escape-string-regexp/master/mod.ts'
-import { ClassField, ClassMethod } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { ClassField, ClassMethod, PropertyLike } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { getElementRegistrationFunctionName } from '../custom.elements.ts'
 import {
   AbstractClassDeclarationDecorator,
@@ -16,38 +16,62 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
   IMethodsDecorator,
   IImportsProviderDecorator {
 
-  protected propertiesReferencedTypes: string[] = []
+  extraImports: Record<string, string> = {
+    AccordionItemSize: '@vonage/vivid/lib/accordion-item/accordion-item',
+    AlertPlacement: '@vonage/vivid/lib/alert/alert',
+    CheckboxConnotation: '@vonage/vivid/lib/checkbox/checkbox',
+    DataGridSelectionMode: '@vonage/vivid/lib/data-grid/data-grid',
+    PaginationSize: '@vonage/vivid/lib/pagination/pagination',
+    Button: '@vonage/vivid/lib/button/button',
+    RadioConnotation: '@vonage/vivid/lib/radio/radio',
+    TabsConnotation: '@vonage/vivid/lib/tabs/tabs',
+  }
+
   protected methods: ClassMethod[] = []
+  protected propertyTypeNames: string[] = []
+  protected methodParamTypeNames: string[] = []
+
+  get referencedTypeNames(): string[] {
+    return [...new Set([...this.propertyTypeNames, ...this.methodParamTypeNames])]
+  }
 
   get vividExportedTypes(): string[] {
     return [
       getElementRegistrationFunctionName(this.classLike!),
-      ...this.propertiesReferencedTypes
+      ...this.referencedTypeNames.filter(x => this.isVividExportedType(x))
     ]
+  }
+
+  get vividInternallyExportedTypes(): string[] {
+    return this.referencedTypeNames.filter(x => x in this.extraImports && !this.isVividExportedType(x))
   }
 
   get imports(): string[] {
     return [
       `import { ${this.vividExportedTypes.join(', ')} } from '@vonage/vivid'`,
-      ...(this.methods.length > 0 ? [`import { ref } from 'vue'`] : [])
+      ...(this.methods.length > 0 ? [`import { ref } from 'vue'`] : []),
+      ...(this.vividInternallyExportedTypes.map(x => `import { ${x} } from '${this.extraImports[x]}'`))
     ]
   }
 
   decorateMethods = (methods: ClassMethod[]) => {
     this.methods = methods
+    this.methodParamTypeNames = this.getTypeNames(this.methods.flatMap(m => m.parameters ?? []))
     return methods
   }
 
   decorateProperties = (properties: ClassField[]) => {
-    this.propertiesReferencedTypes = properties
-      .filter(({ type }) => type)
-      .map(({ type }) => type!.text.split('|').map(x => x.trim()))
-      .reduce((types, targetTypes) => [...types, ...targetTypes.filter(x => this.isVividExportedType(x))], [])
+    this.propertyTypeNames = this.getTypeNames(properties)
     return properties
   }
 
+  getTypeNames = (properties: PropertyLike[]) =>
+    properties
+      .filter(({ type }) => type)
+      .flatMap(({ type }) => type!.text.split('|').map(x => x.trim()))
+
   protected isVividExportedType = (typeName: string): boolean =>
-    !!this.componentDefinitions.find(definitionText =>
-      new RegExp(`export.*\{.*${escapeStringRegexp(typeName)}.*\}`, 'g').test(definitionText)
+    this.componentDefinitions.some(definitionText =>
+      new RegExp(`export.*\{.*\\b${escapeStringRegexp(typeName)}\\b.*\}`, 'g').test(definitionText)
     )
 }
