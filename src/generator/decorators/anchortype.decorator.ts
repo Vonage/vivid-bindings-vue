@@ -28,8 +28,8 @@ export class AnchorTypeDecorator extends AbstractClassDeclarationDecorator imple
   }
 
   replaceAnchorType = (property: PropertyLike) => {
-    if (property.type?.text.toLowerCase() === 'anchortype') {
-      property.type.text = 'string | HTMLElement'
+    if (property.type?.text) {
+      property.type.text = property.type.text.replace(/\b[Aa]nchorType\b/g, 'string | HTMLElement')
     }
   }
 }
