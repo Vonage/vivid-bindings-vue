@@ -17,6 +17,7 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
   IImportsProviderDecorator {
 
   extraImports: Record<string, string> = {
+    DateStr: '@vonage/vivid/lib/date-picker/calendar/dateStr',
     FileUploaderSize: '@vonage/vivid/lib/file-picker/file-picker',
     AccordionItemSize: '@vonage/vivid/lib/accordion-item/accordion-item',
     AlertPlacement: '@vonage/vivid/lib/alert/alert',
