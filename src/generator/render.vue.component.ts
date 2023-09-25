@@ -41,10 +41,11 @@ const renderTagProps = (methods: ClassMethod[], properties: ClassField[], events
 
 const renderProps = (
   properties: ClassField[],
-  vueModel?: VueModel
+  vueModel?: VueModel,
+  vueComponentName?: string,
 ): string =>
   properties.length > 0
-    ? `defineProps<{\n${properties.concat(vueModel ? [{
+    ? `export interface ${vueComponentName}Props {\n${properties.concat(vueModel ? [{
       name: 'modelValue',
       description: 'v-model property',
       kind: 'field',
@@ -57,7 +58,7 @@ const renderProps = (
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
           }${x.name}?: ${x.type ? x.type.text : 'any'}`
       )
-      .join('\n')}\n}>()`
+      .join('\n')}\n}\ndefineProps<${vueComponentName}Props>()`
     : ''
 
 const renderEvents = (
@@ -88,7 +89,7 @@ const renderEvents = (
  * @returns code content for .vue SFC file https://vuejs.org/api/sfc-spec.html#sfc-syntax-specification
  */
 export const renderVividVueComponent = async (template: string,
-  { classDeclaration, tagPrefix, tagName, properties, methods, events, slots, imports, vividElementDocUrl, vueModel }:
+  { classDeclaration, tagPrefix, tagName, properties, methods, events, slots, imports, vividElementDocUrl, vueModel, vueComponentName }:
     Partial<IVividElementVisitorContext> & IVividElementsContext
 ) => await fillPlaceholders(template)({
   componentRegisterMethod: getElementRegistrationFunctionName(classDeclaration!),
@@ -99,6 +100,6 @@ export const renderVividVueComponent = async (template: string,
   tagPrefix,
   methods: renderMethods(methods!),
   events: renderEvents(events!, vueModel),
-  props: renderProps(properties!, vueModel),
+  props: renderProps(properties!, vueModel, vueComponentName),
   tagProps: renderTagProps(methods!, properties!, events!, vueModel),
 })
