@@ -9,15 +9,22 @@ type ReadOnlyClassField = ClassField & {
 }
 
 /**
- * Takes only Public and Writable properties
+ * Takes only Public and Writable and Not Private methods reflected properties/fields
  */
 export class PublicPropertiesDecorator extends AbstractClassDeclarationDecorator implements
   IPropertiesDecorator {
 
-  decorateProperties = (properties: ClassField[]) =>
-    properties.filter(
-      (member) => member.kind === 'field' && !member.name.startsWith('_') &&
-        (member.privacy ?? 'public') === 'public').filter(
-          (member) => member as ReadOnlyClassField ? (member as ReadOnlyClassField).readonly !== true : true
-        )
+  decorateProperties = (properties: ClassField[]) => properties
+    .filter(this.isPublicField)
+    .filter(this.isWritableField)
+    .filter(this.isNotAFieldReflectingPrivateMethod(properties))
+
+  isNotAFieldReflectingPrivateMethod = (properties: ClassField[]) => (classField: ClassField): boolean =>
+    !properties.find((member) => member.kind === 'method' && member.name.startsWith(`#${classField.name}`))
+
+  isWritableField = (classField: ClassField): boolean => classField as ReadOnlyClassField ? (classField as ReadOnlyClassField).readonly !== true : true
+
+  isPublicField = (classField: ClassField): boolean =>
+    classField.kind === 'field' && !classField.name.startsWith('_') &&
+    (classField.privacy ?? 'public') === 'public'
 }
