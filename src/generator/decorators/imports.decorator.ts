@@ -27,6 +27,7 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
     Button: '@vonage/vivid/lib/button/button',
     RadioConnotation: '@vonage/vivid/lib/radio/radio',
     TabsConnotation: '@vonage/vivid/lib/tabs/tabs',
+    CheckAppearance: '@vonage/vivid/lib/menu-item/menu-item',
   }
 
   protected methods: ClassMethod[] = []
