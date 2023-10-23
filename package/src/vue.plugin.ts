@@ -23,7 +23,7 @@ app.use(vivid3, {
 })
 app.mount('#app')
  */
-export const vivid3 = <Plugin>{
+export const vivid3: Plugin<VividConfiguration>= {
   install(app: App<any>, options: VividConfiguration) {
     initDomUtils(window.document)
     directives.forEach(({ name, directive }) => app.directive(name, directive))
