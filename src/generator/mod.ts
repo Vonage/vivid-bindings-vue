@@ -36,7 +36,8 @@ export const generate = async () => {
     new TextEncoder().encode(
       await fillPlaceholders(`${templatesFolder}/root.package.json.template`)({
         npmPackageName,
-        vividPackageVersion: isPatchMode ? vbpkg.version : vpkg.version
+        npmPackageVersion: isPatchMode ? vbpkg.version : vpkg.version,
+        vividPackageVersion: vpkg.version
       })
     )
   )

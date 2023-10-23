@@ -1,6 +1,6 @@
 {
   "name": "<%= npmPackageName %>",
-  "version": "<%= vividPackageVersion %>",
+  "version": "<%= npmPackageVersion %>",
   "main": "<%= vueComponentName %>.vue",
   "homepage": "<%= vividElementDocUrl %>",
   "dependencies": {
