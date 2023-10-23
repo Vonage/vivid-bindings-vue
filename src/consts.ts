@@ -5,3 +5,4 @@ export const rootDirectiveName = 'vivid-root'
 export const markdownFolder = 'markdown'
 export const versionMarkdownFile = 'version.md'
 export const versionFile = `${markdownFolder}/${versionMarkdownFile}`
+export const patchModeEnv = 'PATCH'

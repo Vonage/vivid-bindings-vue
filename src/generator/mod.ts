@@ -1,7 +1,8 @@
 import { ensureDir } from 'https://deno.land/std@0.137.0/fs/ensure_dir.ts'
 
 import vpkg from 'https://esm.sh/@vonage/vivid@latest/package.json' assert { type: "json" }
-import { markdownFolder, npmPackageName, styleDirectiveName, rootDirectiveName, tagPrefix, versionFile } from '../consts.ts'
+import vbpkg from 'https://esm.sh/@vonage/vivid-bindings-vue@latest/package.json' assert { type: "json" }
+import { markdownFolder, npmPackageName, styleDirectiveName, rootDirectiveName, tagPrefix, versionFile, patchModeEnv } from '../consts.ts'
 import { enumerateVividElements } from './custom.elements.ts'
 import { CssPropertiesDecorator } from './decorators/css.properties.decorator.ts'
 import { EventsDecorator } from './decorators/events.decorator.ts'
@@ -23,6 +24,7 @@ import { AnchorTypeDecorator } from './decorators/anchortype.decorator.ts'
  *  - `./package/v3` (generated Vuejs3 components as bindings for Vivid3 in the SFC format https://vuejs.org/api/sfc-spec.html#overview)
  */
 export const generate = async () => {
+  const isPatchMode = Deno.env.get(patchModeEnv)
   const packageDir = 'package'
   const templatesFolder = 'src/generator/templates'
   const packageGeneratedSrcDir = `${packageDir}/src/generated`
@@ -34,7 +36,7 @@ export const generate = async () => {
     new TextEncoder().encode(
       await fillPlaceholders(`${templatesFolder}/root.package.json.template`)({
         npmPackageName,
-        vividPackageVersion: vpkg.version
+        vividPackageVersion: isPatchMode ? vbpkg.version : vpkg.version
       })
     )
   )
