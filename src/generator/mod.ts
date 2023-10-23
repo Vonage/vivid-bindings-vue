@@ -31,6 +31,9 @@ export const generate = async () => {
   const v3Dir = `${packageDir}/v3`
   await ensureDir(packageDir)
 
+  if (isPatchMode) {
+    console.log(`Building patch for previous package version "${vbpkg.version}"`)
+  }
   await Deno.writeFile(
     `${packageDir}/package.json`,
     new TextEncoder().encode(
