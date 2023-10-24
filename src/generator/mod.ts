@@ -86,6 +86,7 @@ export const generate = async () => {
         new TextEncoder().encode(
           await fillPlaceholders(`${templatesFolder}/component.package.json.template`)({
             npmPackageName: `${npmPackageName}-${tagName}`,
+            npmPackageVersion: vpkg.version,
             vividPackageVersion: vpkg.version,
             vueComponentName,
             vividElementDocUrl

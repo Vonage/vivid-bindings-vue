@@ -72,6 +72,12 @@ const renderEvents = (
         type: {
           text: 'any'
         }
+      },
+      {
+        name: vueModel.eventName,
+        type: {
+          text: 'any'
+        }
       }
     ] : [])
       .map(
