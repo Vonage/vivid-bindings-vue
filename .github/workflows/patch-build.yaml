@@ -4,10 +4,14 @@ on:
   workflow_dispatch:
   repository_dispatch:
 
+permissions: read-all
+
 jobs:
   generate:
     name: Run bindings generation
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
 
     steps:
       - uses: actions/checkout@main

@@ -7,10 +7,14 @@ on:
     # Runs "At 00:00 on every day-of-week from Sunday through Saturday." (see https://crontab.guru)
     - cron: '0 0 * * 0-6'
 
+permissions: read-all
+
 jobs:
   generate:
     name: Run bindings generation
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
 
     steps:
       - uses: actions/checkout@main
