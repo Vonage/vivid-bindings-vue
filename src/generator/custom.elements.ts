@@ -1,6 +1,6 @@
 import customElements from 'https://esm.sh/@vonage/vivid@latest/custom-elements.json' assert { type: "json" }
 import {
-  Package, Declaration,
+  Package,
   CustomElement,
   Event,
   ClassLike,
@@ -23,7 +23,8 @@ import {
   isImportsProviderDecorator,
   isMethodsDecorator
 } from './decorators/types.ts'
-import { camel2kebab } from './utils.ts'
+import { camel2kebab, getClassDeclarations } from './utils.ts'
+import { addInheritedItems } from "./custom.elements.inheritance.ts";
 
 /**
  * Some Vivid custom elements classes breaks the naming convention, this map is needed to mitigate that fact
@@ -111,15 +112,7 @@ const getComponentsDefinitions = async () => {
 
 const getValidVividClassDeclarations = async () => {
   const { componentDefinitions } = await getComponentsDefinitions()
-  const classDeclarations = (customElements as Package).modules.reduce
-    ((acc, { declarations }) =>
-      [
-        ...acc,
-        ...(declarations || []).filter(({ kind }) => kind === 'class')
-      ]
-      ,
-      [] as Declaration[]
-    ) as ClassLike[]
+  const classDeclarations = getClassDeclarations(customElements as Package)
   const invalidClassDeclarations = classDeclarations.filter((x) => !componentDefinitions.find(definitionText => definitionText.indexOf(getElementRegistrationFunctionName(x)) > 0)).map(({ name }) => name)
   if (invalidClassDeclarations.length > 0) {
     console.error(`Found incorrectly exported Vivid elements: ${invalidClassDeclarations.join(', ')}`)
@@ -180,6 +173,9 @@ export const enumerateVividElements = async (
 
   for (const classDeclaration of classDeclarations) {
     const imports = []
+
+    addInheritedItems(classDeclaration)
+
     let properties = classDeclaration.members as ClassField[] || []
     let methods = classDeclaration.members as ClassMethod[] || []
     let events = (classDeclaration as CustomElement).events || []
