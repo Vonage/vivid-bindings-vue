@@ -1,8 +1,8 @@
 import * as icons from 'https://icon.resources.vonage.com/latest' assert { type: "json" }
-import { ClassField } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { Attribute } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import {
   AbstractClassDeclarationDecorator,
-  IPropertiesDecorator,
+  IAttributesDecorator,
   IImportsProviderDecorator,
   ITypeDeclarationsProviderDecorator,
   TypeDeclaration
@@ -19,7 +19,7 @@ interface IconDescriptor {
 export class IconTypeDecorator extends AbstractClassDeclarationDecorator implements
   ITypeDeclarationsProviderDecorator,
   IImportsProviderDecorator,
-  IPropertiesDecorator {
+  IAttributesDecorator {
 
   static typeName = 'IconId'
   static enumName = 'Icon'
@@ -50,18 +50,18 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
     return `Icon id. One of ${this.iconDescriptors.length} icons. Catalog with preview/search can be found at https://icons.vivid.vonage.com`
   }
 
-  decorateProperties = (properties: ClassField[]) => properties.map(
-    (prop: ClassField) => {
-      if (prop.type &&
+  decorateAttributes = (attributes: Attribute[]) => attributes.map(
+    (attr) => {
+      if (attr.type &&
         (
-          (this.isIconClass && prop.name === 'name') ||
-          (this.isIconCapableClass && prop.name === 'icon')
+          (this.isIconClass && attr.name === 'name') ||
+          (this.isIconCapableClass && attr.name === 'icon')
         )
       ) {
-        prop.type.text = IconTypeDecorator.typeName
-        prop.description = this.typeDescription
+        attr.type.text = IconTypeDecorator.typeName
+        attr.description = this.typeDescription
       }
-      return prop
+      return attr
     }
   )
 

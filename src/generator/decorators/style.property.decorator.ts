@@ -1,11 +1,11 @@
-import { ClassField, CssCustomProperty, CssPart } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { Attribute, CssCustomProperty, CssPart } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { styleDirectiveName } from '../../consts.ts'
 import {
   AbstractClassDeclarationDecorator,
   ICssPartsDecorator,
   ICssPropertiesDecorator,
   IImportsProviderDecorator,
-  IPropertiesDecorator
+  IAttributesDecorator
 } from "./types.ts"
 
 /**
@@ -15,7 +15,7 @@ export class StylePropertyDecorator extends AbstractClassDeclarationDecorator im
   ICssPropertiesDecorator,
   ICssPartsDecorator,
   IImportsProviderDecorator,
-  IPropertiesDecorator {
+  IAttributesDecorator {
 
   protected cssProperties: CssCustomProperty[] = []
   protected cssParts: CssPart[] = []
@@ -50,17 +50,17 @@ export class StylePropertyDecorator extends AbstractClassDeclarationDecorator im
       }`
   }
 
-  decorateProperties = (properties: ClassField[]) => properties.map(
-    (prop: ClassField) => {
-      if (prop.type &&
+  decorateAttributes = (attributes: Attribute[]) => attributes.map(
+    (attr) => {
+      if (attr.type &&
         (
-          (prop.name === 'style') && this.isCustomPropertyApplicable
+          (attr.name === 'style') && this.isCustomPropertyApplicable
         )
       ) {
-        prop.type.text = `CSSProperties & {\n${this.cssProperties.map(({ name, description, syntax }) => `    /**\n    * ${description}\n    */\n    '${name}'?: ${this.tsTypeFromCssType(syntax)}`).join('\n')}\n  }`
-        prop.description = this.propertyDescription
+        attr.type.text = `CSSProperties & {\n${this.cssProperties.map(({ name, description, syntax }) => `    /**\n    * ${description}\n    */\n    '${name}'?: ${this.tsTypeFromCssType(syntax)}`).join('\n')}\n  }`
+        attr.description = this.propertyDescription
       }
-      return prop
+      return attr
     }
   )
 

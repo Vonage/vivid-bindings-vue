@@ -1,20 +1,19 @@
-import { ClassField, Slot } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { Attribute, Slot } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import {
   AbstractClassDeclarationDecorator,
-  IPropertiesDecorator,
+  IAttributesDecorator,
   ISlotsDecorator
 } from "./types.ts"
 
 /**
- * Adds missing properties declarations, due to incomplete Vivid elements meta data
- * Adds supported Slots documentation on synthetic property `supportedSlots`
+ * Adds missing attributes declarations, due to incomplete Vivid elements meta data
+ * Adds supported Slots documentation on synthetic attribute `supportedSlots`
  */
-export class PropertiesDecorator extends AbstractClassDeclarationDecorator implements
+export class AttributesDecorator extends AbstractClassDeclarationDecorator implements
   ISlotsDecorator,
-  IPropertiesDecorator {
+  IAttributesDecorator {
 
-  styleProperty = <ClassField>{
-    kind: "field",
+  styleAttribute: Attribute = {
     name: "style",
     description: 'Default style properties bindable object',
     type: {
@@ -22,12 +21,10 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
     }
   }
 
-  get supportedSlotsProperty(): ClassField {
+  get supportedSlotsAttribute(): Attribute {
     return {
-      kind: "field",
-      static: true,
       name: "supportedSlots",
-      description: this.supportedSlotsPropertyDescription,
+      description: this.supportedSlotsAttributeDescription,
       type: {
         text: "never"
       }
@@ -38,12 +35,11 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
     return this.slots.filter(({ name }) => name).length > 0
   }
 
-  get supportedSlotsPropertyDescription(): string {
+  get supportedSlotsAttributeDescription(): string {
     return this.slots.filter(({ name }) => name).map(({ name, description }) => `- \`${name}\` - ${description}`).join('\n')
   }
 
-  iconProperty = <ClassField>{
-    kind: "field",
+  iconAttribute: Attribute = {
     name: "icon",
     description: 'Indicates which icon to resolve.',
     type: {
@@ -58,11 +54,11 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
    * Mitigation path: Vivid elements has to be documented properly via JsDoc custom tags
    * https://github.com/open-wc/custom-elements-manifest/blob/8f9646c6a84dce20b1b018a61a8d024bae07d8cd/packages/analyzer/src/features/analyse-phase/class-jsdoc.js#L19
    */
-  affixIconWithTrailingProperties: ClassField[] = [
-    this.iconProperty,
+  affixIconWithTrailingAttributes: Attribute[] = [
+    this.iconAttribute,
     {
-      kind: "field",
-      name: "iconTrailing",
+      name: "icon-trailing",
+      fieldName: "iconTrailing",
       description: 'Indicates the icon affix alignment.',
       type: {
         text: "boolean"
@@ -70,52 +66,52 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
     }
   ]
 
-  extraPropertiesMap: Record<string, ClassField[]> = {
+  extraAttributes: Record<string, Attribute[]> = {
     AccordionItem: [
-      ...this.affixIconWithTrailingProperties
+      ...this.affixIconWithTrailingAttributes
     ],
     Button: [
-      ...this.affixIconWithTrailingProperties
+      ...this.affixIconWithTrailingAttributes
     ],
     Badge: [
-      ...this.affixIconWithTrailingProperties
+      ...this.affixIconWithTrailingAttributes
     ],
     Fab: [
-      ...this.affixIconWithTrailingProperties
+      ...this.affixIconWithTrailingAttributes
     ],
     Tab: [
-      ...this.affixIconWithTrailingProperties
+      ...this.affixIconWithTrailingAttributes
     ],
     Option: [
-      ...this.affixIconWithTrailingProperties
+      ...this.affixIconWithTrailingAttributes
     ],
     TextAnchor: [
-      ...this.affixIconWithTrailingProperties
+      ...this.affixIconWithTrailingAttributes
     ],
     Select: [
-      ...this.affixIconWithTrailingProperties
+      ...this.affixIconWithTrailingAttributes
     ],
 
     TextField: [
-      this.iconProperty
+      this.iconAttribute
     ],
     Combobox: [
-      this.iconProperty
+      this.iconAttribute
     ],
     Banner: [
-      this.iconProperty
+      this.iconAttribute
     ],
     NavItem: [
-      this.iconProperty
+      this.iconAttribute
     ],
     MenuItem: [
-      this.iconProperty
+      this.iconAttribute
     ],
     NavDisclosure: [
-      this.iconProperty
+      this.iconAttribute
     ],
     Note: [
-      this.iconProperty
+      this.iconAttribute
     ]
   }
 
@@ -126,11 +122,11 @@ export class PropertiesDecorator extends AbstractClassDeclarationDecorator imple
     return slots
   }
 
-  decorateProperties = (properties: ClassField[]) =>
+  decorateAttributes = (attributes: Attribute[]) =>
     [
-      ...(this.hasNonDefaultSlots ? [this.supportedSlotsProperty] : []),
-      this.styleProperty,
-      ...properties,
-      ...(this.extraPropertiesMap[this.className] ?? [])
+      ...(this.hasNonDefaultSlots ? [this.supportedSlotsAttribute] : []),
+      this.styleAttribute,
+      ...attributes,
+      ...(this.extraAttributes[this.className] ?? [])
     ]
 }

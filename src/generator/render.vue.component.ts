@@ -1,7 +1,7 @@
-import { ClassMethod, ClassField, Event } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { ClassMethod, Event, Attribute } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { getElementRegistrationFunctionName, IVividElementsContext, IVividElementVisitorContext, VueModel } from './custom.elements.ts'
 import { AsyncClassMethod, InlineClassMethod } from './decorators/types.ts'
-import { fillPlaceholders } from './utils.ts'
+import { fillPlaceholders, kebab2camel } from './utils.ts'
 
 const renderMethods = (methods: ClassMethod[]): string =>
   methods.length > 0 ? (
@@ -26,10 +26,10 @@ const renderMethods = (methods: ClassMethod[]): string =>
       .join(',\n')}\n})`
   ) : ''
 
-const renderTagProps = (methods: ClassMethod[], properties: ClassField[], events: Event[], vueModel?: VueModel) => {
+const renderTagProps = (methods: ClassMethod[], attributes: Attribute[], events: Event[], vueModel?: VueModel) => {
   const items = [
     ...(methods.length > 0 ? ['    ref="element"'] : []), // to invoke the methods we need a ref to an element
-    ...properties.map((x) => `    :${x.name}="${x.name}"`),
+    ...attributes.map((x) => `    :${x.name ?? x.fieldName}="${propName(x)}"`),
     ...events.filter((x) => (vueModel && vueModel.eventName !== x.name) || !vueModel).map((x) => `    @${x.name}="$emit('${x.name}', $event)"`),
     ...(vueModel ? [
       `    :${vueModel.attributeName}="$props.modelValue"`,
@@ -40,15 +40,14 @@ const renderTagProps = (methods: ClassMethod[], properties: ClassField[], events
 }
 
 const renderProps = (
-  properties: ClassField[],
+  attributes: Attribute[],
   vueModel?: VueModel,
   vueComponentName?: string,
 ): string =>
-  properties.length > 0
-    ? `export interface ${vueComponentName}Props {\n${properties.concat(vueModel ? [{
+  attributes.length > 0
+    ? `export interface ${vueComponentName}Props {\n${attributes.concat(vueModel ? [{
       name: 'modelValue',
       description: 'v-model property',
-      kind: 'field',
       type: {
         text: 'any'
       }
@@ -56,7 +55,7 @@ const renderProps = (
       .map(
         (x) =>
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
-          }${x.name}?: ${x.type ? x.type.text : 'any'}`
+          }${propName(x)}?: ${x.type ? x.type.text : 'any'}`
       )
       .join('\n')}\n}\ndefineProps<${vueComponentName}Props>()`
     : ''
@@ -95,7 +94,7 @@ const renderEvents = (
  * @returns code content for .vue SFC file https://vuejs.org/api/sfc-spec.html#sfc-syntax-specification
  */
 export const renderVividVueComponent = async (template: string,
-  { classDeclaration, tagPrefix, tagName, properties, methods, events, slots, imports, vividElementDocUrl, vueModel, vueComponentName }:
+  { classDeclaration, tagPrefix, tagName, attributes, methods, events, slots, imports, vividElementDocUrl, vueModel, vueComponentName }:
     Partial<IVividElementVisitorContext> & IVividElementsContext
 ) => await fillPlaceholders(template)({
   componentRegisterMethod: getElementRegistrationFunctionName(classDeclaration!),
@@ -106,6 +105,8 @@ export const renderVividVueComponent = async (template: string,
   tagPrefix,
   methods: renderMethods(methods!),
   events: renderEvents(events!, vueModel),
-  props: renderProps(properties!, vueModel, vueComponentName),
-  tagProps: renderTagProps(methods!, properties!, events!, vueModel),
+  props: renderProps(attributes!, vueModel, vueComponentName),
+  tagProps: renderTagProps(methods!, attributes!, events!, vueModel),
 })
+
+const propName = (attr: Attribute): string => kebab2camel(attr.name ?? attr.fieldName)
