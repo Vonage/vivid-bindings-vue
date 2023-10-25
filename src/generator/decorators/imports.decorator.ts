@@ -1,5 +1,5 @@
 import { escapeStringRegexp } from 'https://raw.githubusercontent.com/Sab94/escape-string-regexp/master/mod.ts'
-import { Attribute, ClassMethod } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { Attribute, ClassMethod, PropertyLike } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { getElementRegistrationFunctionName } from '../custom.elements.ts'
 import {
   AbstractClassDeclarationDecorator,
@@ -15,6 +15,24 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
   IAttributesDecorator,
   IMethodsDecorator,
   IImportsProviderDecorator {
+
+  // these types are defined in fast-foundation and not exported by vivid, so there's no easy way for consumers to reference them
+  fastFoundationTypes = [
+    'Direction',
+    'ComboboxAutocomplete',
+    'SelectPosition',
+    'GenerateHeaderOptions',
+    'DividerRole',
+    'Orientation',
+    'MenuItemRole',
+    'Orientation',
+    'SelectPosition',
+    'Orientation',
+    'SliderMode',
+    'TabsOrientation',
+    'TextFieldType'
+  ]
+  fastFoundationTypeRegex = new RegExp(`\\b(${this.fastFoundationTypes.join('|')})\\b`, 'g')
 
   extraImports: Record<string, string> = {
     DateStr: '@vonage/vivid/lib/date-picker/calendar/dateStr',
@@ -60,18 +78,30 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
   decorateMethods = (methods: ClassMethod[]) => {
     this.methods = methods
     this.methodParamTypeNames = this.getTypeNames(this.methods.flatMap(m => m.parameters ?? []))
-    return methods
+
+    methods.forEach(m => m.parameters?.forEach(p => this.replaceFastFoundationTypes(p)))
+
+    return methods.map(m => m)
   }
 
   decorateAttributes = (attributes: Attribute[]) => {
     this.propertyTypeNames = this.getTypeNames(attributes)
-    return attributes
+
+    attributes.forEach(a => this.replaceFastFoundationTypes(a))
+
+    return attributes;
   }
 
   getTypeNames = (attributes: Attribute[]) =>
     attributes
       .filter(({ type }) => type)
-      .flatMap(({ type }) => type!.text.split('|').map(x => x.trim()))
+      .flatMap(({ type }) => type!.text.replaceAll('[]', '').split('|').map(x => x.trim()))
+
+  replaceFastFoundationTypes(value: Attribute | PropertyLike) {
+    if (value.type?.text) {
+      value.type.text = value.type.text.replace(this.fastFoundationTypeRegex, 'any')
+    }
+  }
 
   protected isVividExportedType = (typeName: string): boolean =>
     this.componentDefinitions.some(definitionText =>
