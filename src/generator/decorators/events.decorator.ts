@@ -11,14 +11,6 @@ export class EventsDecorator extends AbstractClassDeclarationDecorator implement
   IEventsDecorator {
 
   extraEventsMap: Record<string, Event[]> = {
-    Button: [
-      {
-        name: 'click',
-        type: {
-          text: 'PointerEvent'
-        }
-      }
-    ],
     Banner: [
       {
         name: 'removing',
