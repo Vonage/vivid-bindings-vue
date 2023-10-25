@@ -23,7 +23,8 @@ import {
   isImportsProviderDecorator,
   isMethodsDecorator
 } from './decorators/types.ts'
-import { camel2kebab } from './utils.ts'
+import { camel2kebab, getClassDeclarations } from './utils.ts'
+import { addInheritedItems } from "./custom.elements.inheritance.ts";
 
 /**
  * Some Vivid custom elements classes breaks the naming convention, this map is needed to mitigate that fact
@@ -111,15 +112,7 @@ const getComponentsDefinitions = async () => {
 
 const getValidVividClassDeclarations = async () => {
   const { componentDefinitions } = await getComponentsDefinitions()
-  const classDeclarations = (customElements as Package).modules.reduce
-    ((acc, { declarations }) =>
-      [
-        ...acc,
-        ...(declarations || []).filter(({ kind }) => kind === 'class')
-      ]
-      ,
-      [] as Declaration[]
-    ) as ClassLike[]
+  const classDeclarations = getClassDeclarations(customElements as Package)
   const invalidClassDeclarations = classDeclarations.filter((x) => !componentDefinitions.find(definitionText => definitionText.indexOf(getElementRegistrationFunctionName(x)) > 0)).map(({ name }) => name)
   if (invalidClassDeclarations.length > 0) {
     console.error(`Found incorrectly exported Vivid elements: ${invalidClassDeclarations.join(', ')}`)
@@ -178,7 +171,9 @@ export const enumerateVividElements = async (
     typeDeclarations: {}
   }
 
-  for (const classDeclaration of classDeclarations as CustomElement[]) {
+  for (const classDeclaration of classDeclarations) {
+    addInheritedItems(classDeclaration)
+
     const imports = []
     let attributes = classDeclaration.attributes || []
     let methods = classDeclaration.members as ClassMethod[] || []
