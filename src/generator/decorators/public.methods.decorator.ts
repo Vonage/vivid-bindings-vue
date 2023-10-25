@@ -12,6 +12,6 @@ export class PublicMethodsDecorator extends AbstractClassDeclarationDecorator im
 
   decorateMethods = (methods: ClassMethod[]) =>
     methods.filter(
-      (member) => member.kind === 'method' && !member.name.startsWith('#') &&
+      (member) => member.kind === 'method' && !member.name.startsWith('#') && !member.static &&
         (member.privacy ?? 'public') === 'public')
 }
