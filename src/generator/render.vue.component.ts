@@ -3,6 +3,8 @@ import { getElementRegistrationFunctionName, IVividElementsContext, IVividElemen
 import { AsyncClassMethod, InlineClassMethod } from './decorators/types.ts'
 import { fillPlaceholders, kebab2camel } from './utils.ts'
 
+const defaultEmitType = 'Event & { target: any, currentTarget: any }'
+
 const renderMethods = (methods: ClassMethod[]): string =>
   methods.length > 0 ? (
     `\nconst element = ref<HTMLElement | null>(null)\n` +
@@ -82,7 +84,7 @@ const renderEvents = (
       .map(
         (x) =>
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
-          }(event: '${x.name}', payload: ${x.type?.text ?? 'Event'}): void`
+          }(event: '${x.name}', payload: ${x.type?.text ?? defaultEmitType}): void`
       )
       .join('\n')}\n}>()`
     : ''
