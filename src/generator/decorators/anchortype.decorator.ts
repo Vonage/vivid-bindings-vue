@@ -1,23 +1,23 @@
-import { ClassField, ClassMethod, PropertyLike } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { Attribute, ClassMethod } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import {
   AbstractClassDeclarationDecorator,
   IMethodsDecorator,
-  IPropertiesDecorator,
+  IAttributesDecorator,
 } from "./types.ts"
 
 /**
- * Inlines type defintions for properties and method arguments of type `anchorType` or `AnchorType`,
+ * Inlines type defintions for attributes and method arguments of type `anchorType` or `AnchorType`,
  * as those type aliases are not exported by vivid.
  */
 export class AnchorTypeDecorator extends AbstractClassDeclarationDecorator implements
   IMethodsDecorator,
-  IPropertiesDecorator {
+  IAttributesDecorator {
 
-  decorateProperties = (properties: ClassField[]) => {
-    for (const p of properties) {
+  decorateAttributes = (attributes: Attribute[]) => {
+    for (const p of attributes) {
       this.replaceAnchorType(p)
     }
-    return properties
+    return attributes
   }
 
   decorateMethods(methods: ClassMethod[]): ClassMethod[] {
@@ -27,7 +27,7 @@ export class AnchorTypeDecorator extends AbstractClassDeclarationDecorator imple
     return methods
   }
 
-  replaceAnchorType = (property: PropertyLike) => {
+  replaceAnchorType = (property: Attribute) => {
     if (property.type?.text) {
       property.type.text = property.type.text.replace(/\b[Aa]nchorType\b/g, 'string | HTMLElement')
     }

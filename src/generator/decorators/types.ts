@@ -1,4 +1,4 @@
-import { ClassLike, Event, ClassField, Slot, CssCustomProperty, CssPart, ClassMethod, Type } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { ClassLike, Event, Slot, CssCustomProperty, CssPart, ClassMethod, Type, Attribute } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { getClassName, getComponentName, getTagName } from '../custom.elements.ts'
 
 export type AsyncClassMethod = ClassMethod & {
@@ -35,12 +35,12 @@ export interface ITypeDeclarationsProviderDecorator extends IAbstractClassLikeDe
   get typeDeclarations(): TypeDeclaration[]
 }
 
-export interface IPropertiesDecorator extends IAbstractClassLikeDecorator {
+export interface IAttributesDecorator extends IAbstractClassLikeDecorator {
   /**
-   * Mutates the properties
-   * @param properties initial properties, mutated by the previous decorator
+   * Mutates the attributes
+   * @param attributes initial attributes, mutated by the previous decorator
    */
-  decorateProperties(properties: ClassField[]): ClassField[]
+  decorateAttributes(attributes: Attribute[]): Attribute[]
 }
 
 export interface IMethodsDecorator extends IAbstractClassLikeDecorator {
@@ -85,7 +85,7 @@ export interface ISlotsDecorator extends IAbstractClassLikeDecorator {
 
 export const isImportsProviderDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IImportsProviderDecorator => (decorator as IImportsProviderDecorator).imports !== undefined;
 export const isTypeDeclarationsProviderDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ITypeDeclarationsProviderDecorator => (decorator as ITypeDeclarationsProviderDecorator).typeDeclarations !== undefined;
-export const isPropertiesDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IPropertiesDecorator => (decorator as IPropertiesDecorator).decorateProperties !== undefined;
+export const isAttributesDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IAttributesDecorator => (decorator as IAttributesDecorator).decorateAttributes !== undefined;
 export const isMethodsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is IMethodsDecorator => (decorator as IMethodsDecorator).decorateMethods !== undefined;
 export const isCssPropertiesDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ICssPropertiesDecorator => (decorator as ICssPropertiesDecorator).decorateCSSProperties !== undefined;
 export const isCssPartsDecorator = (decorator: IAbstractClassLikeDecorator): decorator is ICssPartsDecorator => (decorator as ICssPartsDecorator).decorateCSSParts !== undefined;

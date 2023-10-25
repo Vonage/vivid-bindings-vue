@@ -1,18 +1,18 @@
 import { escapeStringRegexp } from 'https://raw.githubusercontent.com/Sab94/escape-string-regexp/master/mod.ts'
-import { ClassField, ClassMethod, PropertyLike } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { Attribute, ClassMethod } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { getElementRegistrationFunctionName } from '../custom.elements.ts'
 import {
   AbstractClassDeclarationDecorator,
   IImportsProviderDecorator,
   IMethodsDecorator,
-  IPropertiesDecorator
+  IAttributesDecorator
 } from "./types.ts"
 
 /**
  * Provides aggregated import statements
  */
 export class ImportsDecorator extends AbstractClassDeclarationDecorator implements
-  IPropertiesDecorator,
+  IAttributesDecorator,
   IMethodsDecorator,
   IImportsProviderDecorator {
 
@@ -63,13 +63,13 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
     return methods
   }
 
-  decorateProperties = (properties: ClassField[]) => {
-    this.propertyTypeNames = this.getTypeNames(properties)
-    return properties
+  decorateAttributes = (attributes: Attribute[]) => {
+    this.propertyTypeNames = this.getTypeNames(attributes)
+    return attributes
   }
 
-  getTypeNames = (properties: PropertyLike[]) =>
-    properties
+  getTypeNames = (attributes: Attribute[]) =>
+    attributes
       .filter(({ type }) => type)
       .flatMap(({ type }) => type!.text.split('|').map(x => x.trim()))
 

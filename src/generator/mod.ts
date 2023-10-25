@@ -8,9 +8,8 @@ import { CssPropertiesDecorator } from './decorators/css.properties.decorator.ts
 import { EventsDecorator } from './decorators/events.decorator.ts'
 import { IconTypeDecorator } from './decorators/icon.type.decorator.ts'
 import { ImportsDecorator } from './decorators/imports.decorator.ts'
-import { PropertiesDecorator } from './decorators/properties.decorator.ts'
+import { AttributesDecorator } from './decorators/attributes.decorator.ts'
 import { PublicMethodsDecorator } from './decorators/public.methods.decorator.ts'
-import { PublicPropertiesDecorator } from './decorators/public.properties.decorator.ts'
 import { SlotsDecorator } from './decorators/slots.decorator.ts'
 import { StylePropertyDecorator } from './decorators/style.property.decorator.ts'
 import { renderVividVueComponent } from './render.vue.component.ts'
@@ -61,18 +60,17 @@ export const generate = async () => {
 
   const { typeDeclarations } = await enumerateVividElements(
     [
-      PublicPropertiesDecorator,
       PublicMethodsDecorator,
       CssPropertiesDecorator,
       SlotsDecorator,
-      PropertiesDecorator,
+      AttributesDecorator,
       AnchorTypeDecorator,
       EventsDecorator,
       IconTypeDecorator,
       StylePropertyDecorator,
       ImportsDecorator
     ],
-    async ({ vueComponentName, tagName, properties, methods, events, slots, imports,
+    async ({ vueComponentName, tagName, attributes, methods, events, slots, imports,
       classDeclaration, vividElementDocUrl, vueModel }) => {
       console.log(vueComponentName)
       const componentPackageDir = `${v3Dir}/${vueComponentName}`
@@ -96,7 +94,7 @@ export const generate = async () => {
       await Deno.writeFile(
         `${componentPackageDir}/${vueComponentName}.vue`,
         new TextEncoder().encode(await renderVividVueComponent(`${templatesFolder}/vue.component.template`, {
-          properties, methods, events, slots, imports, tagName, tagPrefix, classDeclaration, vividElementDocUrl, vueModel, vueComponentName
+          attributes, methods, events, slots, imports, tagName, tagPrefix, classDeclaration, vividElementDocUrl, vueModel, vueComponentName
         }))
       )
     }

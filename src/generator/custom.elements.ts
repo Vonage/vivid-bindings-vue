@@ -4,17 +4,17 @@ import {
   CustomElement,
   Event,
   ClassLike,
-  ClassField,
   Slot,
   CssCustomProperty,
   CssPart,
-  ClassMethod
+  ClassMethod,
+  Attribute
 } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { tagPrefix } from '../consts.ts'
 import {
   TypeDeclarationsMap,
   IAbstractClassLikeDecoratorConstructor,
-  isPropertiesDecorator,
+  isAttributesDecorator,
   isTypeDeclarationsProviderDecorator,
   isCssPropertiesDecorator,
   isCssPartsDecorator,
@@ -148,7 +148,7 @@ export interface IVividElementVisitorContext {
   vividElementDocUrl: string
   vueModel: VueModel
   tagName: string
-  properties: ClassField[]
+  attributes: Attribute[]
   methods: ClassMethod[]
   cssProperties: CssCustomProperty[]
   cssParts: CssPart[]
@@ -178,14 +178,14 @@ export const enumerateVividElements = async (
     typeDeclarations: {}
   }
 
-  for (const classDeclaration of classDeclarations) {
+  for (const classDeclaration of classDeclarations as CustomElement[]) {
     const imports = []
-    let properties = classDeclaration.members as ClassField[] || []
+    let attributes = classDeclaration.attributes || []
     let methods = classDeclaration.members as ClassMethod[] || []
-    let events = (classDeclaration as CustomElement).events || []
-    let slots = (classDeclaration as CustomElement).slots || []
-    let cssProperties = (classDeclaration as CustomElement).cssProperties || []
-    let cssParts = (classDeclaration as CustomElement).cssParts || []
+    let events = classDeclaration.events || []
+    let slots = classDeclaration.slots || []
+    let cssProperties = classDeclaration.cssProperties || []
+    let cssParts = classDeclaration.cssParts || []
 
     for (const decorator of classLikeDecorators.map(
       (decoratorClass: IAbstractClassLikeDecoratorConstructor) => new decoratorClass(classDeclaration, componentDefinitions)
@@ -202,8 +202,8 @@ export const enumerateVividElements = async (
         slots = decorator.decorateSlots(slots)
       }
 
-      if (isPropertiesDecorator(decorator)) {
-        properties = decorator.decorateProperties(properties)
+      if (isAttributesDecorator(decorator)) {
+        attributes = decorator.decorateAttributes(attributes)
       }
 
       if (isMethodsDecorator(decorator)) {
@@ -230,7 +230,7 @@ export const enumerateVividElements = async (
       tagName: getTagName(classDeclaration),
       vividElementDocUrl: getVividElementDocUrl(classDeclaration),
       vueModel: getVividElementVueModel(classDeclaration),
-      properties,
+      attributes,
       methods,
       cssProperties,
       cssParts,
