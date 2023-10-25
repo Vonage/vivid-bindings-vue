@@ -220,11 +220,16 @@ export const enumerateVividElements = async (
       }
     }
 
+    const vueModel = getVividElementVueModel(classDeclaration)
+    if (vueModel) {
+      attributes = attributes.filter(a => (a.name ?? a.fieldName) !== vueModel.attributeName)
+    }
+
     await elementVisitor({
       vueComponentName: getComponentName(classDeclaration),
       tagName: getTagName(classDeclaration),
       vividElementDocUrl: getVividElementDocUrl(classDeclaration),
-      vueModel: getVividElementVueModel(classDeclaration),
+      vueModel,
       attributes,
       methods,
       cssProperties,
