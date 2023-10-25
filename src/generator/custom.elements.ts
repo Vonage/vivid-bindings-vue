@@ -171,9 +171,9 @@ export const enumerateVividElements = async (
     typeDeclarations: {}
   }
 
-  for (const classDeclaration of classDeclarations) {
-    addInheritedItems(classDeclaration)
+  const classDeclarationWithInheritance = classDeclarations.map(addInheritedItems)
 
+  for (const classDeclaration of classDeclarationWithInheritance) {
     const imports = []
     let attributes = classDeclaration.attributes || []
     let methods = classDeclaration.members as ClassMethod[] || []

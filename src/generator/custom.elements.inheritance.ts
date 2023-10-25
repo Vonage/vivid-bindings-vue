@@ -162,20 +162,25 @@ const resolveComponentDeclaration = (reference: Reference): CustomElement | unde
   }
 
   if (declaration) {
-    addInheritedItems(declaration)
+    declaration = addInheritedItems(declaration)
   }
 
   return declaration
 };
 
-export const addInheritedItems = (declaration: CustomElement) => {
+export const addInheritedItems = (declaration: CustomElement): CustomElement => {
   const superclassDeclaration = declaration.superclass ? resolveComponentDeclaration(declaration.superclass) : undefined
 
   if (superclassDeclaration) {
+    // deep clone to avoid mutating input
+    declaration = JSON.parse(JSON.stringify(declaration))
+
     // Inherit members, attributes, and events from the superclass
     // Note: we don't inherit slots, as Vivid components often don't implement them
     declaration.members = inheritItems(m => m.name, superclassDeclaration.members, declaration.members);
     declaration.attributes = inheritItems(getAttributeName, superclassDeclaration.attributes, declaration.attributes);
     declaration.events = inheritItems(m => m.name, superclassDeclaration.events, declaration.events);
   }
+
+  return declaration
 }
