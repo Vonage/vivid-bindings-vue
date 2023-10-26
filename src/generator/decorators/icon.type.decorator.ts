@@ -28,7 +28,8 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
     'Avatar', 'Card', 'AccordionItem',
     'Option', 'Note', 'TextField', 'Select',
     'NavDisclosure', 'Combobox',
-    'NavItem', 'MenuItem']
+    'NavItem', 'MenuItem', 'NumberField',
+    'Tag', 'TreeItem']
 
   get isIconClass() {
     return this.className === 'Icon'
