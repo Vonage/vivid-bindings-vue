@@ -94,24 +94,34 @@ const getComponentsDefinitions = async () => {
   const libFolderUrl = 'https://unpkg.com/@vonage/vivid@latest/lib'
   const vComponentsIndexResponse = await fetch(`${libFolderUrl}/components.d.ts`)
   const componentsIndex = await vComponentsIndexResponse.text()
-  const componentDefinitionsUrls = componentsIndex.split('\n')
-    .map((exportStatement: string) => exportStatement.match(/'\.(.*)'/)?.[1])
+  const componentNames = componentsIndex.split('\n')
+    .map((exportStatement: string) => exportStatement.match(/'\.\/(.*)\/definition'/)?.[1])
     .filter(x => x)
-    .map(x => `${libFolderUrl}${x}.d.ts`)
 
   const componentDefinitions = []
+  const classDefinitions = []
   console.info(`Downloading elements definitions`)
-  for (const componentDefinitionUrl of componentDefinitionsUrls) {
+  for (const componentName of componentNames) {
+    const componentDefinitionUrl = `${libFolderUrl}/${componentName}/definition.d.ts`
+
+    console.info(`${componentDefinitionUrl}...`)
     const response = await fetch(componentDefinitionUrl)
     const componentDefinitionText = await response.text()
     componentDefinitions.push(componentDefinitionText)
-    console.info(`${componentDefinitionUrl}...`)
+
+    const classDefinitionUrl = `${libFolderUrl}/${componentName}/${componentName}.d.ts`
+
+    console.info(`${classDefinitionUrl}...`)
+    const classResponse = await fetch(classDefinitionUrl)
+    const classDefinitionText = await classResponse.text()
+    classDefinitions.push(classDefinitionText)
   }
-  return { componentDefinitions }
+
+  return { componentDefinitions, classDefinitions }
 }
 
 const getValidVividClassDeclarations = async () => {
-  const { componentDefinitions } = await getComponentsDefinitions()
+  const { componentDefinitions, classDefinitions } = await getComponentsDefinitions()
   const classDeclarations = getClassDeclarations(customElements as Package)
   const invalidClassDeclarations = classDeclarations.filter((x) => !componentDefinitions.find(definitionText => definitionText.indexOf(getElementRegistrationFunctionName(x)) > 0)).map(({ name }) => name)
   if (invalidClassDeclarations.length > 0) {
@@ -119,7 +129,8 @@ const getValidVividClassDeclarations = async () => {
   }
   return {
     classDeclarations: classDeclarations.filter(({ name }) => invalidClassDeclarations.indexOf(name) < 0),
-    componentDefinitions
+    componentDefinitions,
+    classDefinitions
   }
 }
 
@@ -166,12 +177,12 @@ export interface IVividElementsSharedContext {
 export const enumerateVividElements = async (
   classLikeDecorators: IAbstractClassLikeDecoratorConstructor[],
   elementVisitor: (context: IVividElementVisitorContext) => Promise<void>): Promise<IVividElementsSharedContext> => {
-  const { classDeclarations, componentDefinitions } = await getValidVividClassDeclarations()
+  const { classDeclarations, componentDefinitions, classDefinitions } = await getValidVividClassDeclarations()
   const result = <IVividElementsSharedContext>{
     typeDeclarations: {}
   }
 
-  const classDeclarationWithInheritance = classDeclarations.map(addInheritedItems)
+  const classDeclarationWithInheritance = classDeclarations.map(c => addInheritedItems(c, classDefinitions))
 
   for (const classDeclaration of classDeclarationWithInheritance) {
     const imports = []
