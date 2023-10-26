@@ -146,6 +146,76 @@ const getAttributeName = (attribute: Attribute): string => {
   return name;
 };
 
+/**
+ * Vivid uses mixins which are not exported in the manifest.
+ * Instead, we need to provide the declaration here, based on the code:
+ * https://github.com/Vonage/vivid-3/tree/main/libs/components/src/shared/patterns
+ */
+const VividMixins: Record<string, Attribute[]> = {
+  AffixIcon: [
+    {
+      name: 'icon',
+      description: 'A decorative icon the custom element should have.',
+      type: { text: 'string' },
+    },
+  ],
+  AffixIconWithTrailing: [
+    {
+      name: 'icon',
+      description: 'A decorative icon the custom element should have.',
+      type: { text: 'string' },
+    },
+    {
+      name: 'icon-trailing',
+      description: 'Indicates the icon affix alignment.',
+      type: { text: 'boolean' },
+    },
+  ],
+  FormElement: [
+    {
+      name: 'label',
+      description: 'The label for the form element.',
+      type: { text: 'string' },
+    },
+  ],
+  FormElementHelperText: [
+    {
+      name: 'helper-text',
+      description: 'The helper text for the form element.',
+      type: { text: 'string' },
+    },
+  ],
+  FormElementSuccessText: [
+    {
+      name: 'success-text',
+      description: 'The success text for the form element.',
+      type: { text: 'string' },
+    },
+  ],
+  FormElementCharCount: [
+    {
+      name: 'char-count',
+      description: 'Whether to show the character count.',
+      type: { text: 'boolean' },
+    },
+  ],
+  ErrorText: [
+    {
+      name: 'error-text',
+      description: 'The error text for the form element.',
+      type: { text: 'string' },
+    },
+  ],
+  DataGridCellExtension: [
+    {
+      name: 'columnDefinition',
+      description: 'Extends the data grid cell definition to hold more options.',
+      type: { text: 'any' },
+    },
+  ],
+  Localized: [],
+};
+
 const resolveComponentDeclaration = (reference: Reference): CustomElement | undefined => {
   let declaration: CustomElement | undefined
 
@@ -168,18 +238,40 @@ const resolveComponentDeclaration = (reference: Reference): CustomElement | unde
   return declaration
 };
 
-export const addInheritedItems = (declaration: CustomElement): CustomElement => {
+const extractMixins = (componentName: string, classDefinitions: string[]): string[] => {
+  for (const definition of classDefinitions) {
+    const match = definition.match(new RegExp(`export interface ${componentName} extends\\s+((?:\\w+,?\\s*)+)`))
+    if (match) {
+      return match[1].split(',').map(s => s.trim())
+    }
+  }
+
+  return []
+}
+
+export const addInheritedItems = (declaration: CustomElement, classDefinitions: string[] = []): CustomElement => {
   const superclassDeclaration = declaration.superclass ? resolveComponentDeclaration(declaration.superclass) : undefined
 
-  if (superclassDeclaration) {
+  const mixins = extractMixins(declaration.name, classDefinitions)
+
+  if (superclassDeclaration || mixins.length) {
     // deep clone to avoid mutating input
     declaration = JSON.parse(JSON.stringify(declaration))
+  }
 
+  if (superclassDeclaration) {
     // Inherit members, attributes, and events from the superclass
     // Note: we don't inherit slots, as Vivid components often don't implement them
     declaration.members = inheritItems(m => m.name, superclassDeclaration.members, declaration.members);
     declaration.attributes = inheritItems(getAttributeName, superclassDeclaration.attributes, declaration.attributes);
     declaration.events = inheritItems(m => m.name, superclassDeclaration.events, declaration.events);
+  }
+
+  for (const mixinName of mixins) {
+    if (!(mixinName in VividMixins)) {
+      throw new Error(`Unknown mixin ${mixinName}`);
+    }
+    declaration.attributes = inheritItems(getAttributeName, VividMixins[mixinName], declaration.attributes);
   }
 
   return declaration
