@@ -13,6 +13,19 @@ export class AttributesDecorator extends AbstractClassDeclarationDecorator imple
   ISlotsDecorator,
   IAttributesDecorator {
 
+  extraAttributes: Record<string, Attribute[]> = {
+    TextArea: [
+      {
+        name: "placeholder",
+        fieldName: "placeholder",
+        description: 'Add a placeholder attribute to add placeholder text to the text area.',
+        type: {
+          text: "string | undefined"
+        }
+      }
+    ]
+  }
+
   styleAttribute: Attribute = {
     name: "style",
     description: 'Default style properties bindable object',
@@ -51,5 +64,6 @@ export class AttributesDecorator extends AbstractClassDeclarationDecorator imple
       ...(this.hasNonDefaultSlots ? [this.supportedSlotsAttribute] : []),
       this.styleAttribute,
       ...attributes,
+      ...(this.extraAttributes[this.className] ?? [])
     ]
 }
