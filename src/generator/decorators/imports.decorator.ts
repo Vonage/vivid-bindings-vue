@@ -35,6 +35,8 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
   fastFoundationTypeRegex = new RegExp(`\\b(${this.fastFoundationTypes.join('|')})\\b`, 'g')
 
   extraImports: Record<string, string> = {
+    SelectableBoxConnotation: '@vonage/vivid/lib/selectable-box/selectable-box',
+    SelectableBoxControlType: '@vonage/vivid/lib/selectable-box/selectable-box',
     DateStr: '@vonage/vivid/lib/date-picker/calendar/dateStr',
     FileUploaderSize: '@vonage/vivid/lib/file-picker/file-picker',
     AccordionItemSize: '@vonage/vivid/lib/accordion-item/accordion-item',
