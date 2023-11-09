@@ -26,32 +26,33 @@ const renderMethods = (methods: ClassMethod[]): string =>
       .join(',\n')}\n})`
   ) : ''
 
-const renderTagProps = (methods: ClassMethod[], attributes: Attribute[], events: Event[], vueModel?: VueModel) => {
+const renderTagProps = (methods: ClassMethod[], attributes: Attribute[], events: Event[], vueModels?: VueModel[]) => {
   const items = [
     ...(methods.length > 0 ? ['    ref="element"'] : []), // to invoke the methods we need a ref to an element
     ...attributes.map((x) => `    :${x.name ?? x.fieldName}="${propName(x)}"`),
-    ...events.filter((x) => (vueModel && vueModel.eventName !== x.name) || !vueModel).map((x) => `    @${x.name}="$emit('${x.name}', $event)"`),
-    ...(vueModel ? [
-      `    :${vueModel.attributeName}="$props.modelValue"`,
-      `    @${vueModel.eventName}="$emit('update:modelValue', ${vueModel.valueMapping}); $emit('${vueModel.eventName}', $event)"`
-    ] : [])
+    ...events.filter((x) => (vueModels && !vueModels.find(({ eventName }) => eventName !== x.name)) || !vueModels).map((x) => `    @${x.name}="$emit('${x.name}', $event)"`),
+    ...(vueModels ? vueModels.flatMap(({ name = 'modelValue', attributeName, eventName, valueMapping }) => [
+      `    :${attributeName}="$props.${name}"`,
+      `    @${eventName}="$emit('update:${name}', ${valueMapping}); $emit('${eventName}', $event)"`
+    ])
+      : [])
   ]
   return items.length > 0 ? items.join('\n') : ''
 }
 
 const renderProps = (
   attributes: Attribute[],
-  vueModel?: VueModel,
+  vueModels?: VueModel[],
   vueComponentName?: string,
 ): string =>
   attributes.length > 0
-    ? `export interface ${vueComponentName}Props {\n${attributes.concat(vueModel ? [{
-      name: 'modelValue',
+    ? `export interface ${vueComponentName}Props {\n${attributes.concat(vueModels ? vueModels.map(({ name = 'modelValue' }) => ({
+      name,
       description: 'v-model property',
       type: {
         text: 'any'
       }
-    }] : [])
+    })) : [])
       .map(
         (x) =>
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
@@ -62,27 +63,31 @@ const renderProps = (
 
 const renderEvents = (
   events: Event[],
-  vueModel?: VueModel
+  vueModels?: VueModel[]
 ): string =>
-  (events.length > 0 || vueModel)
-    ? `\ndefineEmits<{\n${events.concat(vueModel ? [
-      {
-        name: 'update:modelValue',
+  (events.length > 0 || vueModels)
+    ? `\ndefineEmits<{\n${events.concat(vueModels ? [
+      ...vueModels.map(({ name = 'modelValue' }) => ({
+        name: `update:${name}`,
         type: {
           text: 'any'
         }
-      },
-      {
-        name: vueModel.eventName,
+      })),
+      ...vueModels.map(({ eventName }) => ({
+        name: eventName,
         type: {
           text: 'any'
         }
-      }
+      }))
     ] : [])
+      .filter(({ name }, idx, events) =>
+        events.filter(x => x.name === name).length === 1 ||
+        events.findIndex(x => x.name === name) != idx
+      )
       .map(
-        (x) =>
-          `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
-          }(event: '${x.name}', payload: ${x.type?.text ?? 'Event'}): void`
+        ({ name, description, type }) =>
+          `  ${description ? `/**\n  * ${description}\n  */\n  ` : ''
+          }(event: '${name}', payload: ${type?.text ?? 'Event'}): void`
       )
       .join('\n')}\n}>()`
     : ''
@@ -94,7 +99,7 @@ const renderEvents = (
  * @returns code content for .vue SFC file https://vuejs.org/api/sfc-spec.html#sfc-syntax-specification
  */
 export const renderVividVueComponent = async (template: string,
-  { classDeclaration, tagPrefix, tagName, attributes, methods, events, slots, imports, vividElementDocUrl, vueModel, vueComponentName }:
+  { classDeclaration, tagPrefix, tagName, attributes, methods, events, slots, imports, vividElementDocUrl, vueModels, vueComponentName }:
     Partial<IVividElementVisitorContext> & IVividElementsContext
 ) => await fillPlaceholders(template)({
   componentRegisterMethod: getElementRegistrationFunctionName(classDeclaration!),
@@ -104,9 +109,9 @@ export const renderVividVueComponent = async (template: string,
   slot: slots!.length > 0 ? `<slot />` : '',
   tagPrefix,
   methods: renderMethods(methods!),
-  events: renderEvents(events!, vueModel),
-  props: renderProps(attributes!, vueModel, vueComponentName),
-  tagProps: renderTagProps(methods!, attributes!, events!, vueModel),
+  events: renderEvents(events!, vueModels),
+  props: renderProps(attributes!, vueModels, vueComponentName),
+  tagProps: renderTagProps(methods!, attributes!, events!, vueModels),
 })
 
 const propName = (attr: Attribute): string => kebab2camel(attr.name ?? attr.fieldName)

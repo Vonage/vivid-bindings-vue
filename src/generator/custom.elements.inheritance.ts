@@ -2,16 +2,29 @@
 
 import fastFoundationCustomElements from "https://esm.sh/@microsoft/fast-foundation@2/dist/custom-elements.json" assert {
   type: "json",
-};
+}
 import {
   CustomElement,
   Package,
   Reference,
   Attribute
-} from "https://esm.sh/custom-elements-manifest@latest/schema.d.ts";
-import { getClassDeclarations } from "./utils.ts";
+} from "https://esm.sh/custom-elements-manifest@latest/schema.d.ts"
+import { getClassDeclarations } from "./utils.ts"
 
 const fastFoundationClasses = getClassDeclarations(fastFoundationCustomElements as Package) as CustomElement[]
+
+const TextAnchorElementDeclaration: CustomElement = {
+  name: 'HTMLAnchorElement',
+  attributes: [
+    {
+      name: 'href',
+      description:
+        'The URL that the hyperlink points to. Links are not restricted to HTTP-based URLs',
+      type: { text: "string | undefined" },
+    },
+  ],
+  customElement: true,
+}
 
 /**
  * Base declaration for all elements.
@@ -61,7 +74,7 @@ const BaseElementDeclaration: CustomElement = {
     },
   ],
   customElement: true,
-};
+}
 
 /**
  * Form associated classes like FormAssociatedButton are not exported in the manifest.
@@ -130,8 +143,8 @@ and don't support IDL attribute binding.`,
     );
   }
 
-  return declaration;
-};
+  return declaration
+}
 
 // Inherit items that are not already present in the child
 function inheritItems<T>(getName: (item: T) => string, superItems: T[] = [], childItems: T[] = []): T[] {
@@ -219,15 +232,18 @@ const VividMixins: Record<string, Attribute[]> = {
 const resolveComponentDeclaration = (reference: Reference): CustomElement | undefined => {
   let declaration: CustomElement | undefined
 
-  if (reference.name.startsWith('FormAssociated')) {
+  if (reference.name === 'TextAnchor') {
+    // This is the base class for TextAnchor
+    declaration = TextAnchorElementDeclaration
+  } else if (reference.name.startsWith('FormAssociated')) {
     // Form associated classes (FormAssociatedButton etc.) are not exported in the manifest
-    declaration = getFastFormAssociatedDeclaration(reference.name);
+    declaration = getFastFormAssociatedDeclaration(reference.name)
   } else if (reference.name === 'FoundationElement') {
     // This is the base class for all elements
-    declaration = BaseElementDeclaration;
+    declaration = BaseElementDeclaration
   } else if (reference.package === '@microsoft/fast-foundation' && reference.name !== 'FoundationElement') {
     // Remove prefixes added by Vivid
-    const fastClassName = reference.name.replace(/^(Foundation|Fast)/i, '');
+    const fastClassName = reference.name.replace(/^(Foundation|Fast)/i, '')
     declaration = fastFoundationClasses.find(c => c.name.toLowerCase() === fastClassName.toLowerCase())
   }
 
