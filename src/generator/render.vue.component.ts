@@ -30,7 +30,7 @@ const renderTagProps = (methods: ClassMethod[], attributes: Attribute[], events:
   const items = [
     ...(methods.length > 0 ? ['    ref="element"'] : []), // to invoke the methods we need a ref to an element
     ...attributes.map((x) => `    :${x.name ?? x.fieldName}="${propName(x)}"`),
-    ...events.filter((x) => (vueModels && !vueModels.find(({ eventName }) => eventName !== x.name)) || !vueModels).map((x) => `    @${x.name}="$emit('${x.name}', $event)"`),
+    ...events.filter((x) => (vueModels && !vueModels.find(({ eventName }) => eventName === x.name)) || !vueModels).map((x) => `    @${x.name}="$emit('${x.name}', $event)"`),
     ...(vueModels ? vueModels.flatMap(({ name = 'modelValue', attributeName, eventName, valueMapping }) => [
       `    :${attributeName}="$props.${name}"`,
       `    @${eventName}="$emit('update:${name}', ${valueMapping}); $emit('${eventName}', $event)"`
