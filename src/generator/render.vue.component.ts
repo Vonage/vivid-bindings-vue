@@ -1,7 +1,7 @@
 import { ClassMethod, Event, Attribute, Slot, ClassLike } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
 import { getClassName, getElementRegistrationFunctionName, IVividElementsContext, IVividElementVisitorContext, VueModel } from './custom.elements.ts'
 import { AsyncClassMethod, InlineClassMethod } from './decorators/types.ts'
-import { fillPlaceholders, kebab2camel } from './utils.ts'
+import { fillPlaceholders, propNameFromAttribute } from './utils.ts'
 
 const renderSlot = (classDeclaration?: ClassLike, slots?: Slot[]): string => {
   const className = classDeclaration ? getClassName(classDeclaration) : undefined
@@ -10,8 +10,6 @@ const renderSlot = (classDeclaration?: ClassLike, slots?: Slot[]): string => {
   }
   return slots && slots.length > 0 ? `<slot />` : ''
 }
-
-const propName = (attr: Attribute): string => kebab2camel(attr.name ?? attr.fieldName)
 
 const renderAttributeDefault = (attribute: Attribute): string | undefined => {
   const isString = attribute.type?.text === 'string'
@@ -70,9 +68,9 @@ const renderProps = (
       .map(
         (x) =>
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
-          }${propName(x)}?: ${x.type ? x.type.text : 'any'}`
+          }${propNameFromAttribute(x)}?: ${x.type ? x.type.text : 'any'}`
       )
-      .join('\n')}\n}\nconst props: ${propsInterfaceName} = withDefaults(defineProps<${propsInterfaceName}>(), {${attributes.filter(x => x.default).map((x) => `${propName(x)}: ${renderAttributeDefault(x)}`).join(',\n')}})`
+      .join('\n')}\n}\nconst props: ${propsInterfaceName} = withDefaults(defineProps<${propsInterfaceName}>(), {${attributes.filter(x => x.default).map((x) => `${propNameFromAttribute(x)}: ${renderAttributeDefault(x)}`).join(',\n')}})`
     : ''
 
 const renderEvents = (

@@ -36,7 +36,7 @@ export class IconTypeDecorator extends AbstractClassDeclarationDecorator impleme
   }
 
   get iconDescriptors() {
-    return (icons as Record<string, unknown>).default as IconDescriptor[]
+    return (icons as unknown as Record<string, unknown>).default as IconDescriptor[]
   }
 
   get isIconCapableClass() {

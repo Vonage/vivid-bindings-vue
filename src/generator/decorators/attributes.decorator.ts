@@ -3,7 +3,8 @@ import {
   AbstractClassDeclarationDecorator,
   IAttributesDecorator,
   ISlotsDecorator
-} from "./types.ts"
+} from './types.ts'
+import { propNameFromAttribute } from '../utils.ts'
 
 /**
  * Adds missing attributes declarations, due to incomplete Vivid elements meta data
@@ -48,6 +49,13 @@ export class AttributesDecorator extends AbstractClassDeclarationDecorator imple
         name: 'current-checked',
         description: 'The current checked state of the switch.',
         type: { text: 'boolean' },
+      }
+    ],
+    TextField: [
+      {
+        name: 'size',
+        type: { text: 'number' },
+        default: '20'
       }
     ],
     TextArea: [
@@ -104,7 +112,22 @@ export class AttributesDecorator extends AbstractClassDeclarationDecorator imple
     [
       ...(this.hasNonDefaultSlots ? [this.supportedSlotsAttribute] : []),
       this.styleAttribute,
-      ...attributes,
-      ...(this.extraAttributes[this.className] ?? [])
+      ...this.mergeAttributes(attributes, this.extraAttributes[this.className] ?? []),
     ]
+
+  protected mergeAttributes(a: Attribute[], b: Attribute[]): Attribute[] {
+    return Object.values(a.concat(b).reduce((attributesMap, attribute) => {
+      if (attributesMap[propNameFromAttribute(attribute)] === undefined) {
+        attributesMap[propNameFromAttribute(attribute)] = attribute
+      } else {
+        const existingAttribute = attributesMap[propNameFromAttribute(attribute)]
+        const currentAttribute = attribute
+        attributesMap[propNameFromAttribute(attribute)] = {
+          ...existingAttribute,
+          ...currentAttribute
+        } as Attribute
+      }
+      return attributesMap
+    }, {} as Record<string, Attribute>))
+  }
 }
