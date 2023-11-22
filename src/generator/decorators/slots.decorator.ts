@@ -99,7 +99,6 @@ export class SlotsDecorator extends AbstractClassDeclarationDecorator implements
   }
 
   decorateSlots = (slots: Slot[]) =>
-    this.className === 'Icon' ? [] :
       [
         ...slots,
         ...(this.extraSlotsMap[this.className] ?? [])
