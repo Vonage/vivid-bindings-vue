@@ -25,6 +25,9 @@ export class SlotsDecorator extends AbstractClassDeclarationDecorator implements
     ActionGroup: [
       this.contentSlot
     ],
+    Button: [
+      this.contentSlot
+    ],
     Avatar: [
       { name: 'graphic', description: 'Avatar image' }
     ],
