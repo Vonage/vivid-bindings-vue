@@ -1,7 +1,22 @@
-import { ClassMethod, Event, Attribute } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
-import { getElementRegistrationFunctionName, IVividElementsContext, IVividElementVisitorContext, VueModel } from './custom.elements.ts'
+import { ClassMethod, Event, Attribute, Slot, ClassLike } from 'https://esm.sh/custom-elements-manifest@latest/schema.d.ts'
+import { getClassName, getElementRegistrationFunctionName, IVividElementsContext, IVividElementVisitorContext, VueModel } from './custom.elements.ts'
 import { AsyncClassMethod, InlineClassMethod } from './decorators/types.ts'
 import { fillPlaceholders, kebab2camel } from './utils.ts'
+
+const renderSlot = (classDeclaration?: ClassLike, slots?: Slot[]): string => {
+  const className = classDeclaration ? getClassName(classDeclaration) : undefined
+  if (className === 'Icon') {
+    return `<slot v-if="props.name === undefined" />`
+  }
+  return slots && slots.length > 0 ? `<slot />` : ''
+}
+
+const propName = (attr: Attribute): string => kebab2camel(attr.name ?? attr.fieldName)
+
+const renderAttributeDefault = (attribute: Attribute): string | undefined => {
+  const isString = attribute.type?.text === 'string'
+  return isString ? `"${attribute.default !== '\'\'' ? attribute.default : ''}"` : attribute.default
+}
 
 const renderMethods = (methods: ClassMethod[]): string =>
   methods.length > 0 ? (
@@ -26,10 +41,9 @@ const renderMethods = (methods: ClassMethod[]): string =>
       .join(',\n')}\n})`
   ) : ''
 
-const renderTagProps = (methods: ClassMethod[], attributes: Attribute[], events: Event[], vueModels?: VueModel[]) => {
+const renderTagProps = (methods: ClassMethod[], events: Event[], vueModels?: VueModel[]) => {
   const items = [
     ...(methods.length > 0 ? ['    ref="element"'] : []), // to invoke the methods we need a ref to an element
-    ...attributes.map((x) => `    :${x.name ?? x.fieldName}="${propName(x)}"`),
     ...events.filter((x) => (vueModels && !vueModels.find(({ eventName }) => eventName === x.name)) || !vueModels).map((x) => `    @${x.name}="$emit('${x.name}', $event)"`),
     ...(vueModels ? vueModels.flatMap(({ name = 'modelValue', attributeName, eventName, valueMapping }) => [
       `    :${attributeName}="$props.${name}"`,
@@ -43,10 +57,10 @@ const renderTagProps = (methods: ClassMethod[], attributes: Attribute[], events:
 const renderProps = (
   attributes: Attribute[],
   vueModels?: VueModel[],
-  vueComponentName?: string,
+  propsInterfaceName?: string,
 ): string =>
   attributes.length > 0
-    ? `export interface ${vueComponentName}Props {\n${attributes.concat(vueModels ? vueModels.map(({ name = 'modelValue' }) => ({
+    ? `export interface ${propsInterfaceName} {\n${attributes.concat(vueModels ? vueModels.map(({ name = 'modelValue' }) => ({
       name,
       description: 'v-model property',
       type: {
@@ -58,7 +72,7 @@ const renderProps = (
           `  ${x.description ? `/**\n  * ${x.description}\n  */\n  ` : ''
           }${propName(x)}?: ${x.type ? x.type.text : 'any'}`
       )
-      .join('\n')}\n}\ndefineProps<${vueComponentName}Props>()`
+      .join('\n')}\n}\nconst props: ${propsInterfaceName} = withDefaults(defineProps<${propsInterfaceName}>(), {${attributes.filter(x => x.default).map((x) => `${propName(x)}: ${renderAttributeDefault(x)}`).join(',\n')}})`
     : ''
 
 const renderEvents = (
@@ -106,12 +120,10 @@ export const renderVividVueComponent = async (template: string,
   vividElementDocUrl: vividElementDocUrl!,
   imports: imports!.join('\n'),
   tagName: tagName!,
-  slot: slots!.length > 0 ? `<slot />` : '',
+  slot: renderSlot(classDeclaration, slots),
   tagPrefix,
   methods: renderMethods(methods!),
   events: renderEvents(events!, vueModels),
-  props: renderProps(attributes!, vueModels, vueComponentName),
-  tagProps: renderTagProps(methods!, attributes!, events!, vueModels),
+  props: renderProps(attributes!, vueModels, `${vueComponentName}Props`),
+  tagProps: renderTagProps(methods!, events!, vueModels),
 })
-
-const propName = (attr: Attribute): string => kebab2camel(attr.name ?? attr.fieldName)

@@ -3,7 +3,7 @@
 <!-- For more info on this Vivid element please visit <%= vividElementDocUrl %> -->
 <template>
   <<%= tagName %>
-    v-bind="$props"
+    v-bind="props"
 <%= tagProps %>
   ><%= slot %></<%= tagName %>>
 </template>
