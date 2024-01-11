@@ -41,6 +41,7 @@ export class ImportsDecorator extends AbstractClassDeclarationDecorator implemen
     FileUploaderSize: '@vonage/vivid/lib/file-picker/file-picker',
     AccordionItemSize: '@vonage/vivid/lib/accordion-item/accordion-item',
     AlertPlacement: '@vonage/vivid/lib/alert/alert',
+    AlertStrategy: '@vonage/vivid/lib/alert/alert',
     CheckboxConnotation: '@vonage/vivid/lib/checkbox/checkbox',
     DataGridSelectionMode: '@vonage/vivid/lib/data-grid/data-grid',
     PaginationSize: '@vonage/vivid/lib/pagination/pagination',
