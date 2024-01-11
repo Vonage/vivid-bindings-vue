@@ -1,5 +1,4 @@
 import { Directive, CSSProperties } from 'vue'
-import { v1 } from 'uuid'
 import { vividDataAttributePrefix } from '../types'
 import { appendStyle } from '../dom.utils'
 import { DirectiveDescriptor } from './types'
@@ -22,7 +21,7 @@ const styleToCssText = (stylesObject: CSSProperties) =>
 const styleDirective: Directive<HTMLElement, CSSProperties> = {
   beforeMount(el, { modifiers, value }) {
     const tagName = el.tagName.toLowerCase()
-    const vividElementInstanceId = `${v1().substring(0, 8)}`
+    const vividElementInstanceId = `${Math.random().toString(36).substring(2, 10)}`
     const identity = `${dataVividId}-${vividElementInstanceId}`
     el.setAttribute(identity, '')
     Object.entries(modifiers).forEach(

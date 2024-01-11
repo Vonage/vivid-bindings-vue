@@ -227,6 +227,13 @@ const VividMixins: Record<string, Attribute[]> = {
     },
   ],
   Localized: [],
+  Anchored: [
+    {
+      name: 'anchor',
+      description: 'The anchor can be specified either by ID or by direct reference.',
+      type: { text: 'string | HTMLElement' },
+    },
+  ]
 };
 
 const resolveComponentDeclaration = (reference: Reference): CustomElement | undefined => {
