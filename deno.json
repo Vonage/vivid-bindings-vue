@@ -2,6 +2,7 @@
     "tasks": {
         "generate": "deno run --allow-run --allow-read --allow-write --allow-env --allow-net src/mod.ts",
         "newVivid": "deno run --allow-run --allow-read --allow-write --allow-net src/vivid.has.new.version/mod.ts",
-        "localCacheBust": "deno cache --reload --lock=deno.lock --lock-write src/mod.ts"
+        "localCacheBust": "deno cache --reload --lock=deno.lock --lock-write src/mod.ts",
+        "build": "deno task generate && cd ./package && npm install && npm run build"
     }
 }

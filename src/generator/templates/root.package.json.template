@@ -11,19 +11,20 @@
   },
   "license": "Apache-2.0",
   "scripts": {
-    "build": "vite build && vue-tsc -p tsconfig.components.json"
+    "build": "vue-tsc -p tsconfig.components.json && vite build"
   },
   "dependencies": {
     "@vonage/vivid": "<%= vividPackageVersion %>"
   },
   "peerDependencies": {
-    "vue": "^3.3.10"
+    "vue": "^3.4.14"
   },
   "devDependencies": {
     "tslib": "2.6.2",
-    "typescript": "5.3.2",
+    "typescript": "5.3.3",
     "vite": "5.0.11",
-    "vite-plugin-dts": "3.6.3",
+    "vite-plugin-dts": "3.7.1",
+    "vue": "^3.4.14",
     "vue-tsc": "1.8.27"
   }
 }
